@@ -2,20 +2,18 @@
 
 vec3 Ray::at(float t) const
 {
-    return o + d * t;
+    return orig + dir * t;
 }
 
-Ray Ray::norm() const
+Ray Ray::normalize() const
 {
-    return Ray(o, d.norm());
+    return Ray(orig, dir.normalize());
 }
 
-Ray::Ray(const vec3 &o_, const vec3 &d_) :o(o_), d(d_.norm())
+Ray::Ray(const vec3& o_, const vec3& d_) : orig(o_), dir(d_.normalize())
 {
-
 }
 
 Ray::Ray()
 {
-
 }

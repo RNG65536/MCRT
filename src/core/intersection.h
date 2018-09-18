@@ -1,46 +1,44 @@
-#ifndef intersection_h__
-#define intersection_h__
+#pragma once
 
+#include "triangle.h"
 #include "vectors.h"
 
 // intersection record
 
-class TriangleObject;
-
 class HitInfo
 {
-private:
-    // intersection information
-    float t;//parametric distance of intersection
-    vec3 nl;//normal vector at hit point
-    float u, v;
-    const TriangleObject *objectTriangle;
-    int prim_id = -1;
-    int mat_id = -1;
-
 public:
     HitInfo();
-//     HitInfo(float t_, vec3 nl_, const TriangleObject* object_);
-    HitInfo(float t_, float u_, float v_, const vec3& nl_, const TriangleObject* object_);
+    HitInfo(float                 t,
+            float                 u,
+            float                 v,
+            const vec3&           nl,
+            const TriangleObject* hit_object);
     operator bool() const;
 
-//     vec3 getColor() const;
-//     float getEmission() const;
-//     MaterialType getMaterialType() const;
-//     AbstractBSDF *getMaterialBSDF() const;
-//     const Material& getMaterial() const;
-    void setDistance(float dist);
-    float getDistance() const;
-    void setShadingNormal(const vec3& n);
-    vec3 getShadingNormal() const;
-    vec3 getFaceNormal() const;
-    vec3 getConsistentNormal(const vec3& wi,
-        vec3 *refl = nullptr, float *cos_wi = nullptr) const;
-    const TriangleObject *getObject() const;
-    int materialID() const;
-    void setMaterialID(int id);
-    int primitiveID() const;
-    void setPrimitiveID(int id);
-};
+    float distance() const;
 
-#endif // intersection_h__
+    const vec3& shadingNormal() const;
+    const vec3& faceNormal() const;
+
+    vec3 consistentNormal(const vec3& wi,
+                          vec3*       refl = nullptr,
+                          float*      cos_wi = nullptr) const;
+
+    const TriangleObject* triangleObject() const;
+    int                   materialID() const;
+    void                  setMaterialID(int id);
+    int                   primitiveID() const;
+    void                  setPrimitiveID(int id);
+
+private:
+    float m_t;       // ray distance
+    vec3  m_nl;      // shading normal
+    vec3  m_fn;      // face normal
+    float m_u, m_v;  // barycentric coordinates
+
+    int m_objID = -1;
+    int m_matID = -1;
+
+    const TriangleObject* m_hit_object = nullptr;
+};

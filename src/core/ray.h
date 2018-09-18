@@ -1,5 +1,4 @@
-#ifndef ray_h__
-#define ray_h__
+#pragma once
 
 #include "vectors.h"
 
@@ -8,11 +7,19 @@
 class Ray
 {
 public:
-    vec3 o, d;
     Ray();
-    Ray(const vec3 &o_, const vec3 &d_);
-    Ray norm() const;
-    vec3 at(float t) const;
-};
+    Ray(const vec3& o_, const vec3& d_);
 
-#endif // ray_h__
+    // normalize direction
+    Ray normalize() const;
+
+    // point t units away from the ray origin
+    vec3 at(float t) const;
+
+public:
+    // origin
+    vec3 orig;
+
+    // direction
+    vec3 dir;
+};

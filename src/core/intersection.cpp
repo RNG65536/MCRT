@@ -1,100 +1,66 @@
+#include <cassert>
 #include "constants.h"
 #include "intersection.h"
 #include "triangle.h"
 
+HitInfo::HitInfo() : m_t(NUM_INFINITY), m_u(0), m_v(0), m_hit_object(nullptr)
+{
+}
+
+HitInfo::HitInfo(
+    float t, float u, float v, const vec3& nl, const TriangleObject* hit_object)
+    : m_t(t), m_u(u), m_v(v), m_nl(nl), m_hit_object(hit_object)
+{
+    assert(hit_object);
+    m_fn = hit_object->normal();
+}
+
 HitInfo::operator bool() const
 {
-//     return objectTriangle != nullptr;
-    return prim_id != -1;
+    return m_objID != -1;
 }
 
-// HitInfo::HitInfo(float t_, vec3 nl_, const TriangleObject* object_) : t(t_), nl(nl_), objectTriangle(object_)
-HitInfo::HitInfo(float t_, float u_, float v_, const vec3& nl_, const TriangleObject* object_) : t(t_), u(u_), v(v_), nl(nl_), objectTriangle(object_)
+float HitInfo::distance() const
 {
-
+    return m_t;
 }
 
-// HitInfo::HitInfo() : t(NUM_INFINITY), nl(vec3(0, 0, 0)),
-// objectTriangle(nullptr)
-HitInfo::HitInfo() : t(NUM_INFINITY), u(0), v(0),
-objectTriangle(nullptr)
+const vec3& HitInfo::shadingNormal() const
 {
-
+    return m_nl;
 }
 
-// vec3 HitInfo::getColor() const
-// {
-//     return  objectTriangle->getMaterial().getColor();
-// }
-// float HitInfo::getEmission() const{
-//     return  objectTriangle->getMaterial().getEmission();
-// }
-// MaterialType HitInfo::getMaterialType() const{
-//     return  objectTriangle->mat.getType();
-// }
-
-// const Material& HitInfo::getMaterial() const
-// {
-//     return objectTriangle->getMaterial();
-// }
-
-vec3 HitInfo::getShadingNormal() const
+const vec3& HitInfo::faceNormal() const
 {
-    return nl;
-//     return objectTriangle->normal(u, v);
+    return m_fn;
 }
 
-float HitInfo::getDistance() const
+vec3 HitInfo::consistentNormal(const vec3& wi, vec3* refl, float* cos_wi) const
 {
-    return t;
+    return m_hit_object->consistentNormal(wi, m_u, m_v, refl, cos_wi);
 }
 
-const TriangleObject * HitInfo::getObject() const
+const TriangleObject* HitInfo::triangleObject() const
 {
-    return objectTriangle;
-}
-
-vec3 HitInfo::getConsistentNormal(const vec3& wi, vec3 *refl, float *cos_wi) const
-{
-    return objectTriangle->consistentNormal(wi, u, v, refl, cos_wi);
-}
-
-vec3 HitInfo::getFaceNormal() const
-{
-    return objectTriangle->getFaceNormal();
+    return m_hit_object;
 }
 
 void HitInfo::setMaterialID(int id)
 {
-    mat_id = id;
+    m_matID = id;
 }
 
 int HitInfo::materialID() const
 {
-    return mat_id;
+    return m_matID;
 }
 
 void HitInfo::setPrimitiveID(int id)
 {
-    prim_id = id;
+    m_objID = id;
 }
 
 int HitInfo::primitiveID() const
 {
-    return prim_id;
+    return m_objID;
 }
-
-void HitInfo::setShadingNormal(const vec3& n)
-{
-    nl = n;
-}
-
-void HitInfo::setDistance(float dist)
-{
-    t = dist;
-}
-
-// AbstractBSDF * Hit_CUDA::getMaterialBSDF() const
-// {
-//     return objectTriangle->mat.getBSDF();
-// }

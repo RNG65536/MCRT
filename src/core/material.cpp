@@ -2,24 +2,25 @@
 #include "bsdf.h"
 #include "material.h"
 
-Material::Material(const vec3& c, float e, MaterialType t) : m_color(c), m_emission(e), m_type(t)
+Material::Material(const vec3& c, float e, MaterialType t)
+    : m_color(c), m_emission(e), m_type(t)
 {
     switch (m_type)
     {
-    default:
-    case DIFF:
-        m_bsdf = new LambertianBSDF;
-        break;
-    case SSSS:
-    case SPEC:
-        m_bsdf = new SpecularBSDF;
-        break;
-    case REFR:
-        m_bsdf = new RefractiveBSDF;
-        break;
-    case GLSY:
-        m_bsdf = new GlossyBSDF;
-        break;
+        default:
+        case DIFF:
+            m_bsdf = new LambertianBSDF();
+            break;
+        case SSSS:
+        case SPEC:
+            m_bsdf = new SpecularBSDF();
+            break;
+        case REFR:
+            m_bsdf = new RefractiveBSDF();
+            break;
+        case GLSY:
+            m_bsdf = new GlossyBSDF();
+            break;
     }
 
     m_bsdf->setParent(this);
@@ -27,7 +28,7 @@ Material::Material(const vec3& c, float e, MaterialType t) : m_color(c), m_emiss
 
 Material::Material(const Material& mat)
 {
-    *this = mat; // using copy assignment operator which properly implements base class deep copy
+    *this = mat;
 }
 
 MaterialType Material::type() const
@@ -98,9 +99,17 @@ bool Material::isDelta() const
     return m_bsdf->isDelta();
 }
 
-vec3 Material::sample(const vec3& wi, const vec3& nl, float r1, float r2, vec3& total_weight, float *forward_pdfW /*= nullptr*/, float *cos_wo /*= nullptr*/, vec3 *bsdf_weight /*= nullptr*/) const
+vec3 Material::sample(const vec3& wi,
+                      const vec3& nl,
+                      float       r1,
+                      float       r2,
+                      vec3&       total_weight,
+                      float*      forward_pdfW,
+                      float*      cos_wo,
+                      vec3*       bsdf_weight) const
 {
-    return m_bsdf->sample(wi, nl, r1, r2, total_weight, forward_pdfW, cos_wo, bsdf_weight);
+    return m_bsdf->sample(
+        wi, nl, r1, r2, total_weight, forward_pdfW, cos_wo, bsdf_weight);
 }
 
 float Material::pdfW(const vec3& wi, const vec3& nl, const vec3& wo) const
@@ -108,19 +117,23 @@ float Material::pdfW(const vec3& wi, const vec3& nl, const vec3& wo) const
     return m_bsdf->calculatePdfW(wi, nl, wo);
 }
 
-vec3 Material::evaluate(const vec3& wi, const vec3& nl, const vec3& wo, float *cos_wo /*= nullptr*/, float *forward_pdfW /*= nullptr*/) const
+vec3 Material::evaluate(const vec3& wi,
+                        const vec3& nl,
+                        const vec3& wo,
+                        float*      cos_wo,
+                        float*      forward_pdfW) const
 {
     return m_bsdf->evaluate(wi, nl, wo, cos_wo, forward_pdfW);
 }
 
-// todo : implement material library
+// TODO : implement material library
 static std::vector<Material> mat_lib;
-const Material& todo_getMaterial(int mat_id)
+const Material&              todo_getMaterial(int mat_id)
 {
     return mat_lib[mat_id];
 }
 int todo_addMaterial(const Material& mat)
 {
     mat_lib.push_back(mat);
-    return mat_lib.size() - 1;
+    return static_cast<int>(mat_lib.size()) - 1;
 }

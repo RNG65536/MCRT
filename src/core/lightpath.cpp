@@ -5,12 +5,10 @@
 Vert::Vert(vec3 _p, vec3 _n, const TriangleObject* _obj)
     : p(_p), n(_n), obj(_obj)
 {
-
 }
 
 Vert::Vert()
 {
-
 }
 
 bool Vert::canConnectTo(const vec3& position) const
@@ -19,6 +17,45 @@ bool Vert::canConnectTo(const vec3& position) const
     return dot(position - p, nl) > 0;
 }
 
+void Vert::setDeltaFlag(char flag)
+{
+    m_delta_flag = flag;
+}
+
+char Vert::isDelta() const
+{
+    return m_delta_flag;
+}
+
+void Vert::setTotalPdfA(double pdf)
+{
+    m_total_pdfA = pdf;
+}
+
+double Vert::getTotalPdfA() const
+{
+    return m_total_pdfA;
+}
+
+void Vert::setOrientingNormal(const vec3& n)
+{
+    m_orienting_normal = n;
+}
+
+const vec3& Vert::getOrientingNormal() const
+{
+    return m_orienting_normal;
+}
+
+void Vert::setThroughput(const vec3& t)
+{
+    m_throughput = t;
+}
+
+const vec3& Vert::getThroughput() const
+{
+    return m_throughput;
+}
 
 Path::Path()
 {
@@ -95,14 +132,13 @@ const Vert& Path::operator[](int i) const
     return x[i];
 }
 
-Contribution::Contribution(float x_, float y_, vec3 c_, int s_, int t_) : x(x_), y(y_), c(c_), s(s_), t(t_)
+Contribution::Contribution(float x_, float y_, vec3 c_, int s_, int t_)
+    : x(x_), y(y_), c(c_), s(s_), t(t_)
 {
-
 }
 
 Contribution::Contribution()
 {
-
 }
 
 PathContribution::PathContribution()
@@ -255,8 +291,8 @@ int CombinedPath::numNonSpecularEdges() const
             ++num;
         }
     }
-    if (lightSize() > 0 && !lightEnd().isDelta() &&
-        eyeSize() > 0 && !eyeEnd().isDelta())
+    if (lightSize() > 0 && !lightEnd().isDelta() && eyeSize() > 0 &&
+        !eyeEnd().isDelta())
     {
         num++;
     }

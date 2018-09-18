@@ -1,28 +1,30 @@
-#ifndef scenebvh_h__
-#define scenebvh_h__
+#pragma once
 
 #include <vector>
-#include "triangle.h"
 #include "intersection.h"
+#include "triangle.h"
 
 class Ray;
 
-// scene management with bvh
+// scene traversal with acceleration structure
 
 class SceneBVH
 {
-private:
-    void *device = nullptr;
-    void *RtcScene = nullptr;
-
-    const std::vector<TriangleObject>& triangleObjectPool;
-
 public:
     SceneBVH(const std::vector<TriangleObject>& triangles);
     ~SceneBVH();
 
     HitInfo intersect(const Ray& ray) const;
-    bool occluded(const Ray& ray, float tfar) const;
-};
+    bool    occluded(const Ray& ray, float tfar) const;
 
-#endif // scenebvh_h__
+private:
+    const std::vector<TriangleObject>& m_triangles_ref;
+
+    // geometry and acceleration info
+#if WITH_EMBREE
+    void* m_device = nullptr;
+    void* m_scene = nullptr;
+#else
+    void* m_ctx = nullptr;
+#endif
+};

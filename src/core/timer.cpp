@@ -1,30 +1,37 @@
+#define NOMINMAX
+#include <Windows.h>
 #include "timer.h"
 
-void WTimer::init(void)
+struct TimerContext
 {
-    QueryPerformanceFrequency(&_freq);
-    QueryPerformanceCounter(&_start);
-    _stop = _start;
+    LARGE_INTEGER hardware_freq, start_point, stop_point;
+};
+
+Timer::~Timer()
+{
+    delete m_ctx;
 }
 
-WTimer::~WTimer()
+void Timer::reset(void)
 {
-
+    TimerContext* ctx = static_cast<TimerContext*>(m_ctx);
+    QueryPerformanceCounter(&ctx->start_point);
+    ctx->stop_point = ctx->start_point;
 }
 
-void WTimer::reset(void)
+float Timer::getTime(void)
 {
-    QueryPerformanceCounter(&_start);
-    _stop = _start;
+    TimerContext* ctx = static_cast<TimerContext*>(m_ctx);
+    QueryPerformanceCounter(&ctx->stop_point);
+    return float(ctx->stop_point.QuadPart - ctx->start_point.QuadPart) /
+           float(ctx->hardware_freq.QuadPart);
 }
 
-float WTimer::getTime(void)
+Timer::Timer(void)
 {
-    QueryPerformanceCounter(&_stop);
-    return float(_stop.QuadPart - _start.QuadPart) / float(_freq.QuadPart);
-}
-
-WTimer::WTimer(void)
-{
-    init();
+    auto ctx = new TimerContext();
+    m_ctx = ctx;
+    QueryPerformanceFrequency(&ctx->hardware_freq);
+    QueryPerformanceCounter(&ctx->start_point);
+    ctx->stop_point = ctx->start_point;
 }

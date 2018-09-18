@@ -6,8 +6,9 @@
 
 void FrameBuffer::dumpPPM(const char* filename)
 {
-    // Save result to a PPM image (keep these flags if you compile under Windows)    
-    // NOTE::especially std:ios::binary which is equivalent to "wb" in fprintf()
+    // Save result to a PPM image (keep these flags if you compile under
+    // Windows) NOTE::especially std:ios::binary which is equivalent to "wb" in
+    // fprintf()
     std::ofstream ofs(filename, std::ios::out | std::ios::binary);
     if (!ofs.is_open())
     {
@@ -33,9 +34,9 @@ struct HDRPixel
 {
     uint8_t r, g, b, e;
     HDRPixel() = default;
-    HDRPixel(uint8_t r, uint8_t g, uint8_t b, uint8_t e) : r(r), g(g), b(b), e(e)
+    HDRPixel(uint8_t r, uint8_t g, uint8_t b, uint8_t e)
+        : r(r), g(g), b(b), e(e)
     {
-  
     }
     uint8_t operator[](int i) const
     {
@@ -50,13 +51,16 @@ HDRPixel toRGBE(const vec3& c)
     {
         return HDRPixel(0, 0, 0, 0);
     }
-    int e;
-    float m = frexp(d, &e); // d = m * 2^e
-    d = m * 256.0 / d;
-    return HDRPixel(c.x * d, c.y * d, c.z * d, e + 128);
+    int   e;
+    float m = frexp(d, &e);  // d = m * 2^e
+    d = m * 256.0f / d;
+    return HDRPixel(static_cast<uint8_t>(c.x * d),
+                    static_cast<uint8_t>(c.y * d),
+                    static_cast<uint8_t>(c.z * d),
+                    static_cast<uint8_t>(e + 128));
 }
 
-void FrameBuffer::dumpHDR(const char *filename)
+void FrameBuffer::dumpHDR(const char* filename)
 {
     std::ofstream ofs(filename, std::ios::out | std::ios::binary);
     if (!ofs.is_open())
@@ -77,13 +81,13 @@ void FrameBuffer::dumpHDR(const char *filename)
         std::vector<HDRPixel> line(m_width);
         for (int i = 0; i < m_width; i++)
         {
-            int offset = (i + j * m_width) * 3;
-            HDRPixel p = toRGBE(vec3(m_buffer[offset], m_buffer[offset + 1], m_buffer[offset + 2]));
+            int      offset = (i + j * m_width) * 3;
+            HDRPixel p = toRGBE(vec3(
+                m_buffer[offset], m_buffer[offset + 1], m_buffer[offset + 2]));
             line[i] = p;
         }
         ofs << uint8_t(2) << uint8_t(2);
-        ofs << uint8_t((m_width >> 8) & 0xFF)
-            << uint8_t(m_width & 0xFF);
+        ofs << uint8_t((m_width >> 8) & 0xFF) << uint8_t(m_width & 0xFF);
         for (int k = 0; k < 4; k++)
         {
             for (int cursor = 0; cursor < m_width;)
@@ -103,22 +107,22 @@ void FrameBuffer::dumpHDR(const char *filename)
 
 void FrameBuffer::tonemapReinhard()
 {
-    int pixel_count = m_total / 3;
-    float *lum = new float[pixel_count];
-    float *fb = &m_buffer[0];
+    int    pixel_count = m_total / 3;
+    float* lum = new float[pixel_count];
+    float* fb = &m_buffer[0];
 
     float lum_eps = 1e-7f;
 
-    for (int n = 0; n < pixel_count; n++){
-        lum[n] = 0.299*fb[n * 3]
-            + 0.587*fb[n * 3 + 1]
-            + 0.114*fb[n * 3 + 2];
+    for (int n = 0; n < pixel_count; n++)
+    {
+        lum[n] = ::luminance(vec3(fb[n * 3], fb[n * 3 + 1], fb[n * 3 + 2]));
         if (lum[n] < lum_eps) lum[n] = lum_eps;
     }
 
     float lum_min = FLT_MAX;
     float lum_max = -FLT_MAX;
-    for (int n = 0; n < pixel_count; n++){
+    for (int n = 0; n < pixel_count; n++)
+    {
         lum_min = lum_min < lum[n] ? lum_min : lum[n];
         lum_max = lum_max > lum[n] ? lum_max : lum[n];
     }
@@ -128,7 +132,8 @@ void FrameBuffer::tonemapReinhard()
     float r_mean = 0;
     float g_mean = 0;
     float b_mean = 0;
-    for (int n = 0; n < pixel_count; n++){
+    for (int n = 0; n < pixel_count; n++)
+    {
         l_logmean += logf(lum[n]);
         l_mean += lum[n];
         r_mean += fb[n * 3];
@@ -144,32 +149,34 @@ void FrameBuffer::tonemapReinhard()
     float lmin = logf(lum_min);
     float lmax = logf(lum_max);
     float k = (lmax - l_logmean) / (lmax - lmin);
-    float m0 = 0.3 + 0.7 * powf(k, 1.4);// %contrast
-    m0 = 0.77;//%hdrsee default
+    float m0 = 0.3f + 0.7f * powf(k, 1.4f);  // contrast
+    m0 = 0.77f;                              // hdrsee default
 
-    float m = m0;// %Contrast [0.3f, 1.0f]
+    float m = m0;  // Contrast [0.3f, 1.0f]
     //     printf("contrast: %f\n", m);
 
-    float c = 0.5;// %Chromatic Adaptation  [0.0f, 1.0f]
-    float a = 0;// %Light Adaptation  [0.0f, 1.0f]
-    float f = 0; //%Intensity  [-35.0f, 10.0f] (void*)func = intuitiveintensity //specify by log scale
+    float c = 0.5;  // Chromatic Adaptation  [0.0f, 1.0f]
+    float a = 0;    // Light Adaptation  [0.0f, 1.0f]
+    float f = 0;  // Intensity [-35.0f, 10.0f] (void*)func = intuitiveintensity
+                  // specify by log scale
 
     f = expf(-f);
 
-    for (int n = 0; n < pixel_count; n++){
+    for (int n = 0; n < pixel_count; n++)
+    {
         float r(fb[n * 3]), g(fb[n * 3 + 1]), b(fb[n * 3 + 2]);
 
-        float r_lc = c * r + (1.0 - c) * lum[n];    //%local adaptation
-        float r_gc = c * r_mean + (1.0 - c) * l_mean;  //%global adaptation
-        float r_ca = a * r_lc + (1.0 - a) * r_gc;    // %pixel adaptation
+        float r_lc = c * r + (1.0f - c) * lum[n];       // local adaptation
+        float r_gc = c * r_mean + (1.0f - c) * l_mean;  // global adaptation
+        float r_ca = a * r_lc + (1.0f - a) * r_gc;      // pixel adaptation
 
-        float g_lc = c * g + (1.0 - c) * lum[n];   // %local adaptation
-        float g_gc = c * g_mean + (1.0 - c) * l_mean;//  %global adaptation
-        float g_ca = a * g_lc + (1.0 - a) * g_gc;    // %pixel adaptation
+        float g_lc = c * g + (1.0f - c) * lum[n];       // local adaptation
+        float g_gc = c * g_mean + (1.0f - c) * l_mean;  // global adaptation
+        float g_ca = a * g_lc + (1.0f - a) * g_gc;      // pixel adaptation
 
-        float b_lc = c * b + (1.0 - c) * lum[n];   // %local adaptation
-        float b_gc = c * b_mean + (1.0 - c) * l_mean; // %global adaptation
-        float b_ca = a * b_lc + (1.0 - a) * b_gc;   //  %pixel adaptation
+        float b_lc = c * b + (1.0f - c) * lum[n];       // local adaptation
+        float b_gc = c * b_mean + (1.0f - c) * l_mean;  // global adaptation
+        float b_ca = a * b_lc + (1.0f - a) * b_gc;      // pixel adaptation
 
         r = r / (r + powf(f * r_ca, m));
         g = g / (g + powf(f * g_ca, m));
@@ -207,7 +214,11 @@ void FrameBuffer::accumulatePixel(int i, int j, const vec3& c)
 
 void FrameBuffer::accumulateBuffer(const FrameBuffer& f)
 {
-    std::transform(m_buffer.begin(), m_buffer.end(), f.m_buffer.begin(), m_buffer.begin(), std::plus<float>());
+    std::transform(m_buffer.begin(),
+                   m_buffer.end(),
+                   f.m_buffer.begin(),
+                   m_buffer.begin(),
+                   std::plus<float>());
 }
 
 void FrameBuffer::resize(int w, int h)
@@ -225,7 +236,6 @@ FrameBuffer::FrameBuffer(int w, int h)
 
 FrameBuffer::FrameBuffer() : FrameBuffer(0, 0)
 {
-
 }
 
 FrameBuffer::~FrameBuffer()
@@ -235,8 +245,8 @@ FrameBuffer::~FrameBuffer()
 vec3 FrameBuffer::pixel(int i, int j) const
 {
     return vec3(m_buffer[(i + j * m_width) * 3 + 0],
-        m_buffer[(i + j * m_width) * 3 + 1],
-        m_buffer[(i + j * m_width) * 3 + 2]);
+                m_buffer[(i + j * m_width) * 3 + 1],
+                m_buffer[(i + j * m_width) * 3 + 2]);
 }
 
 void FrameBuffer::scale(float s)
@@ -256,4 +266,3 @@ int FrameBuffer::width() const
 {
     return m_width;
 }
-

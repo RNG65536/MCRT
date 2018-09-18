@@ -113,3 +113,63 @@ target_link_libraries(demo_bdpt
     rtcore
     ${EMBREE_LIBRARY}
 )
+
+if (0)
+
+add_executable(demo_photonmap
+    "src/examples/photonmap/photonmap.h"
+    "src/examples/photonmap/photonmap.cpp"
+    "src/examples/photonmap/demo_photonmap.cpp"
+)
+
+target_link_libraries(demo_photonmap
+    rtcore
+    ${EMBREE_LIBRARY}
+)
+
+add_executable(demo_pssmlt
+    "src/examples/pssmlt/demo_pssmlt.cpp"
+)
+
+target_link_libraries(demo_pssmlt
+    rtcore
+    ${EMBREE_LIBRARY}
+)
+
+add_executable(demo_vcm
+    "src/examples/vcm/vcm_material.h"
+    "src/examples/vcm/vcm_misc.h"
+    "src/examples/vcm/vcm_scene.h"
+    "src/examples/vcm/demo_vcm.cpp"
+)
+
+target_link_libraries(demo_vcm
+    rtcore
+    ${EMBREE_LIBRARY}
+)
+
+add_executable(demo_bssrdf
+    "src/examples/bssrdf/bssrdf.h"
+    "src/examples/bssrdf/bssrdf.cpp"
+    "src/examples/bssrdf/mesh_sample.h"
+    "src/examples/bssrdf/mesh_sample.cpp"
+    "src/examples/bssrdf/octree.h"
+    "src/examples/bssrdf/octree.cpp"
+    "src/examples/bssrdf/demo_bssrdf.cpp"
+)
+
+target_link_libraries(demo_bssrdf
+    rtcore
+    ${EMBREE_LIBRARY}
+)
+
+add_executable(demo_consistentnormal
+    "src/examples/consistent_normal/demo_consistent_normal.cpp"
+)
+
+target_link_libraries(demo_consistentnormal
+    rtcore
+    ${EMBREE_LIBRARY}
+)
+
+endif()

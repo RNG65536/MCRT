@@ -1,33 +1,19 @@
-#ifndef timer_h__
-#define timer_h__
+#pragma once
 
-#define NOMINMAX
-#include <Windows.h>
-
-class WTimer
+class Timer
 {
-    LARGE_INTEGER _freq, _start, _stop;
-
 public:
-    WTimer(void);
+    Timer(void);
 
-    /* Get elapsed time from last reset()
-    or class construction.
-    return The elapsed time
-    */
-
+    // get elapsed time from last reset() or class construction. return The
+    // elapsed time
     float getTime(void);
 
-    /*
-    Reset the timer
-    */
-
+    // reset the timer
     void reset(void);
 
-    ~WTimer();
+    ~Timer();
 
 private:
-    void init(void);
+    void* m_ctx;
 };
-
-#endif // timer_h__

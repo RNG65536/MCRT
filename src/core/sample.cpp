@@ -5,9 +5,11 @@
 #include "numeric.h"
 #include "sample.h"
 
+// TODO : use pi-related constants
+
 int DiscreteSampler::sample(float r)
 {
-#if 0 // wrong ??
+#if 0  // wrong ??
     int a = 0, b = cdf.size() - 1;
     int debug_count = 0;
     while (b - a > 1) {
@@ -35,13 +37,16 @@ int DiscreteSampler::sample(float r)
 #else
     int begin = 0;
     int end = m_cdf.size() - 1;
-    while (end > begin) {
-        int mid = begin + (end - begin) / 2;
+    while (end > begin)
+    {
+        int   mid = begin + (end - begin) / 2;
         float c = m_cdf[mid];
-        if (c >= r) {
+        if (c >= r)
+        {
             end = mid;
         }
-        else {
+        else
+        {
             begin = mid + 1;
         }
     }
@@ -54,24 +59,28 @@ int DiscreteSampler::sample()
     // a : begin
     // b : end
     float r = randf();
-    int begin = 0;
-    int end = m_cdf.size() - 1;
-    int debug_count = 0;
+    int   begin = 0;
+    int   end = m_cdf.size() - 1;
+    int   debug_count = 0;
 
     //         while (cdf[b] > r && r >= cdf[a]) {
-    while (end > begin) {
+    while (end > begin)
+    {
         int mid = begin + (end - begin) / 2;
         //             printf("%d\n", n);
-        if (m_cdf[mid] >= r) {
+        if (m_cdf[mid] >= r)
+        {
             end = mid;
         }
-        else {
+        else
+        {
             begin = mid + 1;
         }
         debug_count++;
     }
 
-    //         printf("took %d iters, a(%d), b(%d), b-a(%d)\n\tcdf[a](%f) <= r(%f) < cdf[b](%f)\n",
+    //         printf("took %d iters, a(%d), b(%d), b-a(%d)\n\tcdf[a](%f) <=
+    //         r(%f) < cdf[b](%f)\n",
     //             debug_count, a, b, b-a, cdf[a], r, cdf[b]);
     return end;
 }
@@ -88,16 +97,17 @@ DiscreteSampler::DiscreteSampler(std::vector<float>& data)
 
 DiscreteSampler::DiscreteSampler()
 {
-
 }
 
 void DiscreteSampler::update(std::vector<float>& data)
 {
-    m_pdf = data; // pdf is not needed for sampling purpose
+    m_pdf = data;  // pdf is not needed for sampling purpose
     m_cdf.resize(data.size());
     float norm = std::accumulate(m_pdf.begin(), m_pdf.end(), 0.0f);
-    std::transform(m_pdf.begin(), m_pdf.end(), m_pdf.begin(),
-        std::bind2nd(std::multiplies<float>(), 1.0f / norm));
+    std::transform(m_pdf.begin(),
+                   m_pdf.end(),
+                   m_pdf.begin(),
+                   std::bind2nd(std::multiplies<float>(), 1.0f / norm));
     float sum = 0;
     for (int n = 0; n < m_pdf.size(); n++)
     {
@@ -107,7 +117,7 @@ void DiscreteSampler::update(std::vector<float>& data)
 }
 
 // see tungsten\src\core\sampling\distribution1d
-#if 0 // WITH BUGS
+#if 0  // WITH BUGS
 int sample() {
     return sample(randf());
 }
@@ -122,7 +132,7 @@ vec3 sampleHemisphereCosine(float x, float y)
 {
     x *= 2 * NUM_PI;
     float r2s = std::sqrt(y);
-    return vec3(cos(x)*r2s, sin(x)*r2s, std::sqrt(1 - y));
+    return vec3(cos(x) * r2s, sin(x) * r2s, std::sqrt(1 - y));
 }
 
 vec3 sampleHemisphereCosinePower(float g, float x, float y)
@@ -133,7 +143,7 @@ vec3 sampleHemisphereCosinePower(float g, float x, float y)
     return vec3(s * t, c * t, r2p);
 }
 
-vec3 sampleHemisphereUniform(float x, float y, float *pdf)
+vec3 sampleHemisphereUniform(float x, float y, float* pdf)
 {
     y *= 2 * NUM_PI;
     float r = std::sqrt(1 - x * x);
@@ -146,7 +156,7 @@ vec3 sampleHemisphereUniform(float x, float y, float *pdf)
     return vec3(cos(y) * r, sin(y) * r, x);
 }
 
-vec3 sampleSphereUniform(float x, float y, float *pdf)
+vec3 sampleSphereUniform(float x, float y, float* pdf)
 {
     y *= 2 * NUM_PI;
     float cos_theta = 1.0f - 2.0f * x;
@@ -161,10 +171,10 @@ vec3 sampleSphereUniform(float x, float y, float *pdf)
     return vec3(cosf(y) * sin_theta, sinf(y) * sin_theta, cos_theta);
 }
 
-vec3 sampleSolidAngleUniform(float x, float y, float cos_theta_min, float *pdf)
+vec3 sampleSolidAngleUniform(float x, float y, float cos_theta_min, float* pdf)
 {
     y *= 2 * NUM_PI;
-    float cos_theta = (1 - x) + x * cos_theta_min; // uniform sample cos_theta
+    float cos_theta = (1 - x) + x * cos_theta_min;  // uniform sample cos_theta
     assert(cos_theta >= -1 && cos_theta <= 1);
     float sin_theta = std::sqrt(1 - cos_theta * cos_theta);
 
@@ -185,17 +195,17 @@ float sampleSphereUniformPdf()
 // {
 //     const float term1 = 2.0f * NUM_PI * x;
 //     const float term2 = 2.0f * std::sqrt(y - y * y);
-// 
+//
 //     const vec3 ret(
 //         std::cos(term1) * term2,
 //         std::sin(term1) * term2,
 //         1.0f - 2.0f * y);
-// 
+//
 //     if (pdfW)
 //     {
 //         *pdfW = 0.25f / NUM_PI;
 //     }
-// 
+//
 //     return ret;
 // }
 
@@ -216,15 +226,13 @@ vec2 sampleTriangleUniform(float x, float y)
 //     return ret;
 // }
 
-vec3 sampleHemisphereCosineW(float x, float y, float *pdfW)
+vec3 sampleHemisphereCosineW(float x, float y, float* pdfW)
 {
     const float term1 = 2.0f * NUM_PI * x;
     const float term2 = std::sqrt(1.0f - y);
 
     const vec3 ret(
-        std::cos(term1) * term2,
-        std::sin(term1) * term2,
-        std::sqrt(y));
+        std::cos(term1) * term2, std::sin(term1) * term2, std::sqrt(y));
 
     if (pdfW)
     {
@@ -243,30 +251,30 @@ vec2 sampleConcentricDiscA(float x, float y)
 {
     float phi, r;
 
-    float a = 2 * x - 1;   /* (a,b) is now on [-1,1]^2 */
+    float a = 2 * x - 1; /* (a,b) is now on [-1,1]^2 */
     float b = 2 * y - 1;
 
-    if (a > -b)      /* region 1 or 2 */
+    if (a > -b) /* region 1 or 2 */
     {
-        if (a > b)   /* region 1, also |a| > |b| */
+        if (a > b) /* region 1, also |a| > |b| */
         {
             r = a;
             phi = (NUM_PI / 4.0f) * (b / a);
         }
-        else        /* region 2, also |b| > |a| */
+        else /* region 2, also |b| > |a| */
         {
             r = b;
             phi = (NUM_PI / 4.0f) * (2.0f - (a / b));
         }
     }
-    else            /* region 3 or 4 */
+    else /* region 3 or 4 */
     {
-        if (a < b)   /* region 3, also |a| >= |b|, a != 0 */
+        if (a < b) /* region 3, also |a| >= |b|, a != 0 */
         {
             r = -a;
             phi = (NUM_PI / 4.0f) * (4.0f + (b / a));
         }
-        else        /* region 4, |b| >= |a|, but a==0 and b==0 could occur. */
+        else /* region 4, |b| >= |a|, but a==0 and b==0 could occur. */
         {
             r = -b;
 
@@ -292,7 +300,7 @@ float sampleConcentricDiscPdfA()
     return 1 / NUM_PI;
 }
 
-vec3 sampleHemisphereCosinePowerW(float x, float y, float power, float *pdfW)
+vec3 sampleHemisphereCosinePowerW(float x, float y, float power, float* pdfW)
 {
     const float term1 = 2.0f * NUM_PI * x;
     const float term2 = std::pow(y, 1.0f / (power + 1.0f));
@@ -303,23 +311,20 @@ vec3 sampleHemisphereCosinePowerW(float x, float y, float power, float *pdfW)
         *pdfW = (power + 1.0f) * std::pow(term2, power) * (0.5f / NUM_PI);
     }
 
-    return vec3(
-        std::cos(term1) * term3,
-        std::sin(term1) * term3,
-        term2);
+    return vec3(std::cos(term1) * term3, std::sin(term1) * term3, term2);
 }
 
-float sampleHemisphereCosinePowerPdfW(const vec3& normal, const vec3& direction, float power)
+float sampleHemisphereCosinePowerPdfW(const vec3& normal,
+                                      const vec3& direction,
+                                      float       power)
 {
     const float cosTheta = f_max(0.0f, dot(normal, direction));
 
     return (power + 1.0f) * std::pow(cosTheta, power) * (0.5f / NUM_PI);
 }
 
-
 Sampler::~Sampler()
 {
-
 }
 
 float Sampler::randf()
@@ -334,7 +339,6 @@ float StandardSampler::next()
 
 StandardSampler::StandardSampler()
 {
-
 }
 
 void MetropolisSampler::reject()
@@ -419,7 +423,7 @@ float MetropolisSampler::mutate(float x)
 {
     float r = _random.randf();
     float s1 = 1.0 / 512.0, s2 = 1.0 / 16.0;
-//     float s1 = 1.0 / 1024.0, s2 = 1.0 / 32.0;
+    //     float s1 = 1.0 / 1024.0, s2 = 1.0 / 32.0;
     float dx = s1 / (s1 / s2 + std::abs(2.0 * r - 1.0)) - s1 / (s1 / s2 + 1.0);
     if (r < 0.5)
     {
@@ -440,9 +444,8 @@ float RandomNumberGenerator::randf()
 
 RandomNumberGenerator::RandomNumberGenerator() : _dist(0.0f, 1.0f)
 {
-    union
-    {
-        float f;
+    union {
+        float        f;
         unsigned int i;
     } u;
     u.f = ::randf();
@@ -453,10 +456,10 @@ RandomNumberGenerator::RandomNumberGenerator() : _dist(0.0f, 1.0f)
 
 PrimarySample::PrimarySample(float val)
 {
-//     value = randf();
+    //     value = randf();
 }
 
 PrimarySample::PrimarySample()
 {
-//     value = randf();
+    //     value = randf();
 }

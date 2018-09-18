@@ -1,16 +1,10 @@
-#ifndef film_h__
-#define film_h__
+#pragma once
 
 #include <vector>
 #include "vectors.h"
 
 class FrameBuffer
 {
-private:
-    std::vector<float> m_buffer;
-    int m_width, m_height;
-    int m_total;
-
 public:
     FrameBuffer();
     FrameBuffer(int w, int h);
@@ -23,11 +17,15 @@ public:
 
     void tonemapGamma(float gamma);
     void tonemapReinhard();
-    void dumpPPM(const char *filename);
-    void dumpHDR(const char *filename);
+    void dumpPPM(const char* filename);
+    void dumpHDR(const char* filename);
 
     vec3 pixel(int i, int j) const;
-    int width() const;
-    int height() const;
+    int  width() const;
+    int  height() const;
+
+private:
+    std::vector<float> m_buffer;
+    int                m_width, m_height;
+    int                m_total;
 };
-#endif // film_h__

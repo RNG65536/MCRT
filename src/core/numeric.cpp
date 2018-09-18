@@ -5,15 +5,12 @@
 #include "vectors.h"
 
 static std::uniform_real_distribution<float> uniform_dist(0.0f, 1.0f);
-static std::default_random_engine rng;
-static std::mutex _mutex;
+static std::default_random_engine            rng;
+static std::mutex                            _mutex;
 
 float randf()
 {
-//     std::unique_lock<std::mutex> lock(_mutex); // extremely slow
-
-    //     return (float(rand()) + float(rand()) * float(RAND_MAX)) / (float(RAND_MAX) * float(RAND_MAX));
-
+    //     std::unique_lock<std::mutex> lock(_mutex); // extremely slow
     return uniform_dist(rng);
 }
 
@@ -39,51 +36,12 @@ int i_max(int a, int b)
 
 float clamp(float x, float a, float b)
 {
-    return x<a ? a : x>b ? b : x;
-}
-
-// float log2(float x)
-// {
-//     return std::log(x) * 1.4426950408889634f;
-// }
-
-float fastlog2(float x)
-{
-    union {
-        float f;
-        uint32_t i;
-    } vx = { x };
-    union {
-        uint32_t i;
-        float f;
-    } mx = { (vx.i & 0x007FFFFF) | 0x3f000000 };
-    float y = vx.i;
-    y *= 1.1920928955078125e-7f;
-
-    return y - 124.22551499f
-        - 1.498030302f * mx.f
-        - 1.72587999f / (0.3520887068f + mx.f);
-}
-
-float fasterlog2(float x)
-{
-    union {
-        float f;
-        uint32_t i;
-    } vx = { x };
-    float y = vx.i;
-    y *= 1.1920928955078125e-7f;
-    return y - 126.94269504f;
+    return x < a ? a : x > b ? b : x;
 }
 
 float sq(float x)
 {
     return x * x;
-}
-
-float linearRatio(float x, float a, float b)
-{
-    return (x - a) / (b - a);
 }
 
 float toRadians(float deg)
@@ -98,13 +56,9 @@ float toDegrees(float rad)
 
 float luminance(const vec3& rgb)
 {
-    return 0.212671f * rgb.x +
-        0.715160f * rgb.y +
-        0.072169f * rgb.z;
-
-// return 0.299 * c.x + 0.587 * c.y + 0.114 * c.z;
+    // return 0.212671f * rgb.x + 0.715160f * rgb.y + 0.072169f * rgb.z;
+    return 0.299 * rgb.x + 0.587 * rgb.y + 0.114 * rgb.z;
 }
-
 
 void TKahanAdder::add(const double b)
 {
@@ -114,60 +68,9 @@ void TKahanAdder::add(const double b)
     sum = t;
 }
 
-TKahanAdder::TKahanAdder(const double b /*= 0.0*/)
+TKahanAdder::TKahanAdder(const double b)
 {
     sum = b;
     carry = 0.0;
     y = 0.0;
 }
-
-// int DiscreteSampler::sample(float rnd)
-// {
-//     int count;
-// 
-//     // TODO: use binary search
-// #if 0
-//     for (int n = 0; n < m_cdf.size(); n++) {
-//         count = n;
-//         if (cdf[n] > u) {
-//             break;
-//         }
-//     }
-// #else
-//         {
-//             int begin = 0;
-//             int end = m_cdf.size() - 1;
-//             while (end > begin) {
-//                 int mid = begin + (end - begin) / 2;
-//                 float c = m_cdf[mid];
-//                 if (c >= u) {
-//                     end = mid;
-//                 }
-//                 else {
-//                     begin = mid + 1;
-//                 }
-//             }
-//             count = begin;
-//         }
-// #endif
-// 
-//         return count;
-// }
-// 
-// void DiscreteSampler::update(std::vector<float> pdf)
-// {
-//     m_cdf.clear();
-//     m_cdf.resize(pdf.size());
-// 
-//     float acc = 0;
-//     for (int n = 0; n < pdf.size(); n++)
-//     {
-//         acc += pdf[n];
-//         m_cdf[n] = acc;
-//     }
-// }
-// 
-// DiscreteSampler::DiscreteSampler()
-// {
-// 
-// }
