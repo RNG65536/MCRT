@@ -114,8 +114,6 @@ target_link_libraries(demo_bdpt
     ${EMBREE_LIBRARY}
 )
 
-if (0)
-
 add_executable(demo_photonmap
     "src/examples/photonmap/photonmap.h"
     "src/examples/photonmap/photonmap.cpp"
@@ -171,5 +169,3 @@ target_link_libraries(demo_consistentnormal
     rtcore
     ${EMBREE_LIBRARY}
 )
-
-endif()
