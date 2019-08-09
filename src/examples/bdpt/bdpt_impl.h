@@ -14,6 +14,8 @@
 #include "scene.h"
 #include "triangle.h"
 
+// reference BDPT implementation based on Hachisuka's MMLT demo
+// this implementation is straightforward but less efficient
 class ReferenceBDPT
 {
     const Camera&            camera;
