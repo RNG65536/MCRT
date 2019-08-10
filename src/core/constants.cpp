@@ -7,7 +7,8 @@ const float NUM_INFINITY = std::numeric_limits<float>::infinity();
 const float NUM_PI = static_cast<float>(const_pi);
 
 const float NUM_EPS = 1e-10f;
-const float NUM_EPS_DET = 1e-10f;
+//const float NUM_EPS_DET = 1e-10f;
+const float NUM_EPS_DET = 1e-6f;
 // const float M_EPS_RAY = 1e-5f; //++++++++++++++++++++++ better than 1e-6??
 const float NUM_EPS_RAY = 1e-4f;  // works for BDPT
 // const float NUM_EPS_RAY = 1e-3f; // works for BDPT

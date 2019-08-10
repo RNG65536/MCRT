@@ -101,7 +101,7 @@ vec3& vec3::operator/=(float f)
     return *this;
 }
 
-float vec3::operator[](int i) const
+const float& vec3::operator[](int i) const
 {
     return (&x)[i];
 }
@@ -125,6 +125,11 @@ float vec3::lengthSquared() const
 float vec3::length() const
 {
     return std::sqrt(x * x + y * y + z * z);
+}
+
+bool vec3::isNormalized() const
+{
+    return fabs(length() - 1.0f) < 1e-6f;
 }
 
 bool vec3::operator==(const vec3& v) const
@@ -288,5 +293,13 @@ vec3d::vec3d(double a) : x(a), y(a), z(a)
 }
 
 vec3d::vec3d() : x(0), y(0), z(0)
+{
+}
+
+byte3::byte3() : x(0), y(0), z(0)
+{
+}
+
+byte3::byte3(int8_t x, int8_t y, int8_t z) : x(x), y(y), z(z)
 {
 }

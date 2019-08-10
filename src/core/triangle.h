@@ -1,5 +1,7 @@
 #pragma once
 
+#include "intersection.h"
+#include "ray.h"
 #include "vectors.h"
 
 // triangle object
@@ -18,7 +20,7 @@ public:
     TriangleObject(vec3 a, vec3 b, vec3 c, vec3 na, vec3 nb, vec3 nc);
 
     float area() const;
-    vec3  boxCenter() const;
+    vec3  baryCenter() const;
     vec3  normal() const;
     vec3  consistentNormal(const vec3& wi,
                            float       u,
@@ -37,11 +39,22 @@ public:
 
     AABB boundingBox() const;
 
+    bool intersect(Ray& ray, HitInfo& hit_info) const;
+
+    std::string toString() const;
+
+    static void setIntersectionEpsilon(float eps);
+
 public:
-    vec3 a, b, c;
-    vec3 n, na, nb, nc;
-    vec3 m_vertex_alpha;
+    vec3 a, b, c;         // vertices
+    vec3 n, na, nb, nc;   // face normal and vertex normals
+    vec3 m_vertex_alpha;  // for consistent normal
 
 private:
     int m_matID;
+    int m_objID;
+
+    static float s_intersection_epsilon;
 };
+
+typedef TriangleObject Triangle;

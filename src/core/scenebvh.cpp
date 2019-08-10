@@ -7,6 +7,7 @@
 #include "scenebvh.h"
 
 #define USE_EMBREE WITH_EMBREE
+#define USE_NANORT 1
 
 #if USE_EMBREE
 #include <embree2/rtcore.h>
@@ -185,7 +186,7 @@ SceneBVH::SceneBVH(const std::vector<TriangleObject>& triangles)
 
     rtcCommit(rtc_scene);
 }
-#else
+#elif USE_NANORT
 #include <nanort/nanort.h>
 
 struct NanoRTContext
@@ -314,4 +315,5 @@ SceneBVH::SceneBVH(const std::vector<TriangleObject>& triangles)
 
     std::cout << "NANORT INIT" << std::endl;
 }
+#else
 #endif

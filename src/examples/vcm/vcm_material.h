@@ -636,7 +636,7 @@ private:
                 m_reflectCoeff * _material.m_mirrorReflectance) +
                 (1.0f - m_reflectCoeff);
 
-            m_continuationProb = clamp(m_continuationProb, 0.0f, 1.0f);
+            m_continuationProb = clampf(m_continuationProb, 0.0f, 1.0f);
         }
     }
 };

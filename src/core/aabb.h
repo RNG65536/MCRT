@@ -1,8 +1,11 @@
 #pragma once
 
+#include "intersection.h"
+#include "ray.h"
 #include "vectors.h"
 
 class TriangleObject;
+class BoundedTriangle;
 
 // axis aligned bounding box
 
@@ -10,22 +13,47 @@ class AABB
 {
 public:
     AABB();
-    AABB(const vec3& min, const vec3& max);
+    AABB(const float3& min, const float3& max);
     AABB(const AABB& aabb);
     AABB& operator=(const AABB& aabb);
 
-    const vec3& min() const;
-    const vec3& max() const;
+    const float3& min() const;
+    const float3& max() const;
 
-    void enclose(const AABB& b);
-    void enclose(const vec3& p);
-    vec3 center() const;
-    vec3 diagonal() const;
+    void reset();
+
+    void   expandBy(const AABB& box);
+    void   expandBy(const float3& point);
+    float3 center() const;
+    float3 diagonal() const;
+    float  surfaceArea() const;
+    float  surfaceAreaCost() const;
+
+    bool isValid() const;
+    int  largestDimension() const;
+
+    bool intersect(Ray& ray, float& tnear) const;
+
+    // MUST use this for AABB culling because
+    // the ray's origin can be inside the AABB
+    bool overlap(const Ray& ray) const;
+
+    void intersectBy(const AABB& box);
+
+    AABB intersect(const AABB& box) const;
+
+    AABB clipAxis(float min, float max, int axis) const;
+    AABB clipX(float min, float max) const;
+    AABB clipY(float min, float max) const;
+    AABB clipZ(float min, float max) const;
+
+    std::string toString() const;
 
 private:
-    vec3 m_min, m_max;
+    float3 m_min;
+    float3 m_max;
 };
 
-AABB enclose(const AABB& a, const AABB& b);
-AABB enclose(const AABB& a, const vec3& point);
+AABB expandBy(const AABB& a, const AABB& b);
+AABB expandBy(const AABB& a, const float3& point);
 AABB getAABB(const TriangleObject& object);

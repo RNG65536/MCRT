@@ -14,6 +14,11 @@ float randf()
     return uniform_dist(rng);
 }
 
+float randfFast()
+{
+    return (rand() + 0.5f) / RAND_MAX;
+}
+
 float f_min(float a, float b)
 {
     return a < b ? a : b;
@@ -34,7 +39,7 @@ int i_max(int a, int b)
     return a > b ? a : b;
 }
 
-float clamp(float x, float a, float b)
+float clampf(float x, float a, float b)
 {
     return x < a ? a : x > b ? b : x;
 }

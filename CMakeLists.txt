@@ -3,6 +3,13 @@ project(MCRT)
 
 set(CMAKE_CXX_STANDARD 11)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+if (MSVC)
+    add_compile_options("/Zi")
+    add_link_options("/DEBUG")
+endif()
+
 find_package(openmp REQUIRED)
 if (OPENMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -16,6 +23,23 @@ set(advanced_sources
     "src/core/lightpath.cpp"
     "src/core/volumetric.h"
     "src/core/volumetric.cpp"
+)
+
+set(acceleration_sources
+    "src/core/acceleration/BoundedTriangle.h"
+    "src/core/acceleration/BoundedTriangle.cpp"
+    "src/core/acceleration/BVH.h"
+    "src/core/acceleration/BVH.cpp"
+    #"src/core/acceleration/Geometry.h"
+    #"src/core/acceleration/Geometry.cpp"
+    "src/core/acceleration/Intersection.h"
+    "src/core/acceleration/Intersection.cpp"
+    "src/core/acceleration/Logger.h"
+    "src/core/acceleration/Logger.cpp"
+    "src/core/acceleration/SAHBVH.h"
+    "src/core/acceleration/SAHBVH.cpp"
+    "src/core/acceleration/SplitBVH.h"
+    "src/core/acceleration/SplitBVH.cpp"
 )
 
 set(basic_sources
@@ -79,15 +103,19 @@ else()
     message("without embree")
 endif()
 
-
+# rtcore
 add_library(rtcore
     ${advanced_sources}
     ${basic_sources}
     ${utility_sources}
+    ${acceleration_sources}
 )
+
+set_target_properties(rtcore PROPERTIES FOLDER core)
 
 source_group("core\\advanced" FILES ${advanced_sources})
 source_group("core\\basic" FILES ${basic_sources})
+source_group("core\\acceleration" FILES ${acceleration_sources})
 source_group("core\\utility" FILES ${utility_sources})
 
 include_directories(
@@ -95,6 +123,7 @@ include_directories(
     src/thirdparty
 )
 
+# path tracing
 add_executable(demo_pt
     "src/examples/pt/demo_pt.cpp"
 )
@@ -104,6 +133,9 @@ target_link_libraries(demo_pt
     ${EMBREE_LIBRARY}
 )
 
+set_target_properties(demo_pt PROPERTIES FOLDER demos)
+
+# bdpt
 add_executable(demo_bdpt
     "src/examples/bdpt/bdpt_impl.h"
     "src/examples/bdpt/demo_bdpt.cpp"
@@ -114,6 +146,9 @@ target_link_libraries(demo_bdpt
     ${EMBREE_LIBRARY}
 )
 
+set_target_properties(demo_bdpt PROPERTIES FOLDER demos)
+
+# photonmap
 add_executable(demo_photonmap
     "src/examples/photonmap/photonmap.h"
     "src/examples/photonmap/photonmap.cpp"
@@ -125,6 +160,9 @@ target_link_libraries(demo_photonmap
     ${EMBREE_LIBRARY}
 )
 
+set_target_properties(demo_photonmap PROPERTIES FOLDER demos)
+
+# pssmlt
 add_executable(demo_pssmlt
     "src/examples/pssmlt/demo_pssmlt.cpp"
 )
@@ -134,6 +172,9 @@ target_link_libraries(demo_pssmlt
     ${EMBREE_LIBRARY}
 )
 
+set_target_properties(demo_pssmlt PROPERTIES FOLDER demos)
+
+# vcm
 add_executable(demo_vcm
     "src/examples/vcm/vcm_material.h"
     "src/examples/vcm/vcm_misc.h"
@@ -146,6 +187,9 @@ target_link_libraries(demo_vcm
     ${EMBREE_LIBRARY}
 )
 
+set_target_properties(demo_vcm PROPERTIES FOLDER demos)
+
+# bssrdf
 add_executable(demo_bssrdf
     "src/examples/bssrdf/bssrdf.h"
     "src/examples/bssrdf/bssrdf.cpp"
@@ -161,6 +205,9 @@ target_link_libraries(demo_bssrdf
     ${EMBREE_LIBRARY}
 )
 
+set_target_properties(demo_bssrdf PROPERTIES FOLDER demos)
+
+# consistent normal
 add_executable(demo_consistentnormal
     "src/examples/consistent_normal/demo_consistent_normal.cpp"
 )
@@ -169,3 +216,19 @@ target_link_libraries(demo_consistentnormal
     rtcore
     ${EMBREE_LIBRARY}
 )
+
+set_target_properties(demo_consistentnormal PROPERTIES FOLDER demos)
+
+# split bvh
+add_executable(demo_splitbvh
+    "src/examples/splitbvh/demo_splitbvh.cpp"
+    "src/examples/splitbvh/debug_mesh.h"
+    "src/examples/splitbvh/debug_mesh.cpp"
+)
+
+target_link_libraries(demo_splitbvh
+    rtcore
+    ${EMBREE_LIBRARY}
+)
+
+set_target_properties(demo_splitbvh PROPERTIES FOLDER demos)

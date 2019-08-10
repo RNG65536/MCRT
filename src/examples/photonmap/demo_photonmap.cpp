@@ -372,7 +372,7 @@ static void loadModel(Scene& scene_bvh)
 
             if (specaular)
             {
-                specular_obj_bbox.enclose(tri.boundingBox());
+                specular_obj_bbox.expandBy(tri.boundingBox());
             }
         }
     }

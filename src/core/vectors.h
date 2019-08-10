@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 
 // custom vector and operators
 
@@ -10,31 +11,35 @@ public:
     vec3();
     explicit vec3(float a);
     vec3(float x, float y, float z);
-    vec3   operator+(const float& v) const;
-    vec3   operator+(const vec3& v) const;
-    vec3   operator-(const float& v) const;
-    vec3   operator-(const vec3& v) const;
-    vec3&  operator+=(const vec3& v);
-    vec3&  operator-=(const vec3& v);
-    vec3   operator*(float f) const;
-    vec3   operator*(const vec3& v) const;
-    vec3   operator/(const vec3& v) const;
-    vec3&  operator*=(float f);
-    vec3&  operator*=(const vec3& v);
-    vec3   operator-() const;
-    vec3   operator/(float f) const;
-    vec3&  operator/=(float f);
-    float  operator[](int i) const;
-    float& operator[](int i);
-    vec3   normalize() const;
-    float  lengthSquared() const;
-    float  length() const;
-    bool   operator==(const vec3& v) const;
-    bool   operator!=(const vec3& v) const;
+    vec3         operator+(const float& v) const;
+    vec3         operator+(const vec3& v) const;
+    vec3         operator-(const float& v) const;
+    vec3         operator-(const vec3& v) const;
+    vec3&        operator+=(const vec3& v);
+    vec3&        operator-=(const vec3& v);
+    vec3         operator*(float f) const;
+    vec3         operator*(const vec3& v) const;
+    vec3         operator/(const vec3& v) const;
+    vec3&        operator*=(float f);
+    vec3&        operator*=(const vec3& v);
+    vec3         operator-() const;
+    vec3         operator/(float f) const;
+    vec3&        operator/=(float f);
+    const float& operator[](int i) const;
+    float&       operator[](int i);
+    vec3         normalize() const;
+    float        lengthSquared() const;
+    float        length() const;
+    bool         operator==(const vec3& v) const;
+    bool         operator!=(const vec3& v) const;
+
+    bool isNormalized() const;
 
 public:
     float x, y, z;
 };
+
+typedef vec3 float3;
 
 void debugPrint(const vec3& a);
 
@@ -65,6 +70,14 @@ public:
     int x, y, z;
     int3();
     int3(int a, int b, int c);
+};
+
+class byte3
+{
+public:
+    int8_t x, y, z;
+    byte3();
+    byte3(int8_t x, int8_t y, int8_t z);
 };
 
 class vec3d

@@ -64,7 +64,7 @@ public:
         for (auto& s : m_geometry)
         {
             AABB tri_bbox = AABB(s.p - vec3(s.rad), s.p + vec3(s.rad));
-            scene_bbox.enclose(tri_bbox);
+            scene_bbox.expandBy(tri_bbox);
         }
         _sceneSphere.m_cenetr = scene_bbox.getCenter();
         _sceneSphere.m_radius = scene_bbox.diagonal().length() * 0.5f;
@@ -143,7 +143,7 @@ public:
         for (auto& s : m_triangles)
         {
             AABB tri_bbox = s.boundingBox();
-            scene_bbox.enclose(tri_bbox);
+            scene_bbox.expandBy(tri_bbox);
         }
         _sceneSphere.m_cenetr = scene_bbox.center();
         _sceneSphere.m_radius = scene_bbox.diagonal().length() * 0.5f;

@@ -1173,7 +1173,7 @@ static vec3 radiance_sss(const Ray& primary_ray, const Scene& scene, int irr_sam
             //             colorState = mult(colorState, objColor); // TODO: check if use this with dipole !!!!!!!
 
             float f_r = fresnel(f_max(-dot(cr.dir, nhit), 0.0), getEta()); // Fresnel reflectance
-            f_r = clamp(f_r, 0, 1);
+            f_r = clampf(f_r, 0, 1);
 
             // diffuse shading
             //             radianceIntegral += mult(colorState, vec3(f_max(0, -dot(cr.d, nhit)))); //+++++++++++

@@ -1,9 +1,10 @@
 #pragma once
 
-#include "triangle.h"
 #include "vectors.h"
 
 // intersection record
+
+class TriangleObject;
 
 class HitInfo
 {
@@ -15,6 +16,8 @@ public:
             const vec3&           nl,
             const TriangleObject* hit_object);
     operator bool() const;
+
+    void reset();
 
     float distance() const;
 
@@ -31,7 +34,9 @@ public:
     int                   primitiveID() const;
     void                  setPrimitiveID(int id);
 
-private:
+    bool operator<(const HitInfo& b) const;
+
+public:
     float m_t;       // ray distance
     vec3  m_nl;      // shading normal
     vec3  m_fn;      // face normal

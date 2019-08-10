@@ -195,7 +195,7 @@ void FrameBuffer::tonemapGamma(float gamma)
     float inv_gamma = 1.0f / gamma;
     for (int n = 0; n < m_total; n++)
     {
-        m_buffer[n] = powf(clamp(m_buffer[n], 0.0f, 1.0f), inv_gamma);
+        m_buffer[n] = powf(clampf(m_buffer[n], 0.0f, 1.0f), inv_gamma);
     }
 }
 

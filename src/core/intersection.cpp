@@ -20,6 +20,16 @@ HitInfo::operator bool() const
     return m_objID != -1;
 }
 
+void HitInfo::reset()
+{
+    m_t = NUM_INFINITY;
+    m_u = 0.0f;
+    m_v = 0.0f;
+    m_objID = -1;
+    m_matID = -1;
+    m_hit_object = nullptr;
+}
+
 float HitInfo::distance() const
 {
     return m_t;
@@ -58,6 +68,11 @@ int HitInfo::materialID() const
 void HitInfo::setPrimitiveID(int id)
 {
     m_objID = id;
+}
+
+bool HitInfo::operator<(const HitInfo& b) const
+{
+    return m_t < b.m_t;
 }
 
 int HitInfo::primitiveID() const

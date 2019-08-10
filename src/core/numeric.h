@@ -6,12 +6,13 @@ class vec3;
 
 // not thread-safe
 float randf();
+float randfFast();
 
 float f_min(float a, float b);
 float f_max(float a, float b);
 int   i_min(int a, int b);
 int   i_max(int a, int b);
-float clamp(float x, float a, float b);
+float clampf(float x, float a, float b);
 
 // square
 float sq(float x);

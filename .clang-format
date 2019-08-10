@@ -1,15 +1,16 @@
 ---
 BasedOnStyle: Google
-AccessModifierOffset: -4
 IndentWidth: 4
 TabWidth: 4
+AccessModifierOffset: -4
 UseTab: Never
 BreakBeforeBraces: Allman
 Standard: Cpp03
-ColumnLimit: 80
-DerivePointerAlignment: false
-PointerAlignment: Left
-AllowShortFunctionsOnASingleLine: None
 BinPackParameters: false
 BinPackArguments: false
 AlignConsecutiveDeclarations: true
+BreakConstructorInitializersBeforeComma: true
+AllowShortFunctionsOnASingleLine: None
+DerivePointerAlignment: false
+PointerAlignment: Left
+ColumnLimit: 80

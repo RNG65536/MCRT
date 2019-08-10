@@ -133,7 +133,7 @@ void Scene::finalize()
     for (auto& t : m_triangles)
     {
         AABB tri_bbox = getAABB(t);
-        scene_bbox.enclose(tri_bbox);
+        scene_bbox.expandBy(tri_bbox);
     }
     m_bounding_sphere.m_cenetr = scene_bbox.center();
     m_bounding_sphere.m_radius = scene_bbox.diagonal().length() * 0.5f;
@@ -181,9 +181,9 @@ void Scene::finalize()
     size_t num_triangles = m_triangles.size();
     for (int n = 0; n < num_triangles; n++)
     {
-        bbox.enclose(m_triangles[n].a);
-        bbox.enclose(m_triangles[n].b);
-        bbox.enclose(m_triangles[n].c);
+        bbox.expandBy(m_triangles[n].a);
+        bbox.expandBy(m_triangles[n].b);
+        bbox.expandBy(m_triangles[n].c);
     }
 
     printf("scene bounding box:\n");
