@@ -9,13 +9,11 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "AABB.h"
-#include "BoundedTriangle.h"
-#include "Logger.h"
+#include "aabb.h"
+#include "boundedtriangle.h"
+#include "logger.h"
 #include "constants.h"
 
-namespace debug
-{
 #define DEBUG_BINS 0
 #define DEBUG_INFO 0
 
@@ -169,4 +167,3 @@ private:
     std::vector<std::shared_ptr<BoundedTriangle> > m_triangle_refs;
     std::shared_ptr<SplitBVHNode>                  m_rootNode;
 };
-}

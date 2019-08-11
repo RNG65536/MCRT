@@ -1,7 +1,5 @@
-#include "Logger.h"
+#include "logger.h"
 
-namespace debug
-{
 static Logger s_debug_logger(false);
 static Logger s_info_logger(true);
 
@@ -17,5 +15,4 @@ Logger& Logger::debug()
 Logger& Logger::info()
 {
     return s_info_logger;
-}
 }

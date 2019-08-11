@@ -1,6 +1,6 @@
-#include "BoundedTriangle.h"
+#include "boundedtriangle.h"
 
-AABB debug::BoundedTriangle::clipBoundTight(float min,
+AABB BoundedTriangle::clipBoundTight(float min,
                                                    float max,
                                                    int   axis) const
 {
@@ -123,12 +123,12 @@ AABB debug::BoundedTriangle::clipBoundTight(float min,
 #endif
 }
 
-bool debug::BoundedTriangle::intersectBound(Ray& ray) const
+bool BoundedTriangle::intersectBound(Ray& ray) const
 {
     return m_clipped_bound.overlap(ray);
 }
 
-bool debug::BoundedTriangle::intersect(Ray& ray, HitInfo& hit_info) const
+bool BoundedTriangle::intersect(Ray& ray, HitInfo& hit_info) const
 {
     if (false == m_clipped_bound.overlap(ray))
     {
@@ -138,24 +138,24 @@ bool debug::BoundedTriangle::intersect(Ray& ray, HitInfo& hit_info) const
     return m_triangle->intersect(ray, hit_info);
 }
 
-const std::shared_ptr<Triangle>& debug::BoundedTriangle::originalTriangle()
+const std::shared_ptr<Triangle>& BoundedTriangle::originalTriangle()
     const
 {
     return m_triangle;
 }
 
-const AABB& debug::BoundedTriangle::clippedBoundingBox() const
+const AABB& BoundedTriangle::clippedBoundingBox() const
 {
     return m_clipped_bound;
 }
 
-debug::BoundedTriangle::BoundedTriangle(
+BoundedTriangle::BoundedTriangle(
     const std::shared_ptr<BoundedTriangle>& triangle, const AABB& aabb)
     : m_triangle(triangle->m_triangle), m_clipped_bound(aabb)
 {
 }
 
-debug::BoundedTriangle::BoundedTriangle(
+BoundedTriangle::BoundedTriangle(
     const std::shared_ptr<Triangle>& triangle, const AABB& aabb)
     : m_triangle(triangle), m_clipped_bound(aabb)
 {

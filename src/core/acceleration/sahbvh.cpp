@@ -1,8 +1,6 @@
 #include <algorithm>
-#include "SAHBVH.h"
+#include "sahbvh.h"
 
-namespace debug
-{
 bool SAHBVHLeafNode::intersect(Ray& ray, HitInfo& hit_info) const
 {
     hit_info.reset();
@@ -657,7 +655,7 @@ SAHBVH::SAHBVH(const std::vector<Triangle>& mesh)
     m_rootNode = build(0, (int)m_triangles.size(), 0u, "root");
 }
 
-std::shared_ptr<debug::SAHBVHNode> SAHBVH::buildLeaf(
+std::shared_ptr<SAHBVHNode> SAHBVH::buildLeaf(
     int begin, int end, uint32_t level, const std::string& direction)
 {
     auto node = std::make_shared<SAHBVHLeafNode>();
@@ -681,7 +679,7 @@ std::shared_ptr<debug::SAHBVHNode> SAHBVH::buildLeaf(
     return node;
 }
 
-std::shared_ptr<debug::SAHBVHBranchNode> SAHBVH::buildBranch(
+std::shared_ptr<SAHBVHBranchNode> SAHBVH::buildBranch(
     int begin, int end, uint32_t level, const std::string& direction, int& mid)
 {
     auto node = std::make_shared<SAHBVHBranchNode>();
@@ -724,7 +722,7 @@ std::shared_ptr<debug::SAHBVHBranchNode> SAHBVH::buildBranch(
     return node;
 }
 
-std::shared_ptr<debug::SAHBVHNode> SAHBVH::build(int                begin,
+std::shared_ptr<SAHBVHNode> SAHBVH::build(int                begin,
                                                  int                end,
                                                  uint32_t           level,
                                                  const std::string& direction)
@@ -761,5 +759,4 @@ bool SAHBVH::intersect(Ray& ray, HitInfo& hit_info) const
     {
         return false;
     }
-}
 }

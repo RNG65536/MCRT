@@ -26,25 +26,19 @@ set(advanced_sources
 )
 
 set(acceleration_sources
-    "src/core/acceleration/BoundedTriangle.h"
-    "src/core/acceleration/BoundedTriangle.cpp"
-    "src/core/acceleration/BVH.h"
-    "src/core/acceleration/BVH.cpp"
-    #"src/core/acceleration/Geometry.h"
-    #"src/core/acceleration/Geometry.cpp"
-    "src/core/acceleration/Intersection.h"
-    "src/core/acceleration/Intersection.cpp"
-    "src/core/acceleration/Logger.h"
-    "src/core/acceleration/Logger.cpp"
-    "src/core/acceleration/SAHBVH.h"
-    "src/core/acceleration/SAHBVH.cpp"
-    "src/core/acceleration/SplitBVH.h"
-    "src/core/acceleration/SplitBVH.cpp"
+    "src/core/acceleration/bvh.h"
+    "src/core/acceleration/bvh.cpp"
+    "src/core/acceleration/sahbvh.h"
+    "src/core/acceleration/sahbvh.cpp"
+    "src/core/acceleration/splitbvh.h"
+    "src/core/acceleration/splitbvh.cpp"
 )
 
 set(basic_sources
     "src/core/aabb.h"
     "src/core/aabb.cpp"
+    "src/core/boundedtriangle.h"
+    "src/core/boundedtriangle.cpp"
     "src/core/bsdf.h"
     "src/core/bsdf.cpp"
     "src/core/camera.h"
@@ -86,6 +80,8 @@ set(utility_sources
     "src/core/sample.cpp"
     "src/core/timer.h"
     "src/core/timer.cpp"
+    "src/core/logger.h"
+    "src/core/logger.cpp"
 )
 
 include_directories(
@@ -224,6 +220,8 @@ add_executable(demo_splitbvh
     "src/examples/splitbvh/demo_splitbvh.cpp"
     "src/examples/splitbvh/debug_mesh.h"
     "src/examples/splitbvh/debug_mesh.cpp"
+    "src/examples/splitbvh/debugintersection.h"
+    "src/examples/splitbvh/debugintersection.cpp"
 )
 
 target_link_libraries(demo_splitbvh

@@ -55,6 +55,11 @@ void TriangleObject::setIntersectionEpsilon(float eps)
     s_intersection_epsilon = eps;
 }
 
+void TriangleObject::setPrimitiveID(int id)
+{
+    m_objID = id;
+}
+
 TriangleObject::TriangleObject()
 {
 }
@@ -179,6 +184,11 @@ vec3 TriangleObject::consistentNormal(
 void TriangleObject::setVertexAlpha(const vec3& alpha)
 {
     m_vertex_alpha = alpha;
+}
+
+const int& TriangleObject::primitiveID() const
+{
+    return m_objID;
 }
 
 AABB TriangleObject::boundingBox() const

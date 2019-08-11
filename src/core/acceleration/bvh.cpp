@@ -1,8 +1,6 @@
 #include <algorithm>
-#include "BVH.h"
+#include "bvh.h"
 
-namespace debug
-{
 bool BVHLeafNode::intersect(Ray& ray, HitInfo& hit_info) const
 {
     bool hit = primitive->intersect(ray, hit_info);
@@ -91,9 +89,8 @@ SplitAxisComparator::SplitAxisComparator(int split_axis)
 {
 }
 
-bool SplitAxisComparator::operator()(
-    const std::shared_ptr<Triangle>& a,
-    const std::shared_ptr<Triangle>& b) const
+bool SplitAxisComparator::operator()(const std::shared_ptr<Triangle>& a,
+                                     const std::shared_ptr<Triangle>& b) const
 {
     const float3& ca = a->baryCenter();
     const float3& cb = b->baryCenter();
@@ -137,9 +134,9 @@ bool BVH::intersect(Ray& ray, HitInfo& hit_info) const
 }
 
 std::shared_ptr<BVHNode> BVH::build(int                begin,
-                                                  int                end,
-                                                  uint32_t           level,
-                                                  const std::string& direction)
+                                    int                end,
+                                    uint32_t           level,
+                                    const std::string& direction)
 {
     assert(begin < end);
 
@@ -198,13 +195,18 @@ std::shared_ptr<BVHNode> BVH::build(int                begin,
 
 BVH::BVH(const std::vector<Triangle>& mesh)
 {
+    int total = (int)mesh.size();
     m_triangles.clear();
-    for (const auto& t : mesh)
+
+    for (int i = 0; i < total; i++)
     {
+        // TODO : store obj ID in triangle reference
+        // or make sure this is always deep copy
         // copy constructor
-        m_triangles.push_back(std::make_shared<Triangle>(t));
+        auto nt = std::make_shared<Triangle>(mesh[i]);
+        nt->setPrimitiveID(i);
+        m_triangles.push_back(nt);
     }
 
     m_rootNode = build(0, (int)m_triangles.size(), 0u, "root");
-}
 }

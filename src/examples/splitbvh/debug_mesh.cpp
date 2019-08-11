@@ -1,7 +1,6 @@
 #include "constants.h"
 #include "debug_mesh.h"
 #include "numeric.h"
-//#include "acceleration/Math.h"
 
 typedef float3 vector3f;
 

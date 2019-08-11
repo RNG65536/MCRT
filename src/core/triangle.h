@@ -15,6 +15,9 @@ public:
     void setMaterialID(int id);
     void setVertexAlpha(const vec3& alpha);  // for consistent normal
 
+    const int& primitiveID() const;
+    void setPrimitiveID(int id);
+
     TriangleObject();
     TriangleObject(vec3 a, vec3 b, vec3 c);
     TriangleObject(vec3 a, vec3 b, vec3 c, vec3 na, vec3 nb, vec3 nc);

@@ -7,7 +7,7 @@
 #include "scenebvh.h"
 
 #define USE_EMBREE WITH_EMBREE
-#define USE_NANORT 1
+#define USE_NANORT 0
 
 #if USE_EMBREE
 #include <embree2/rtcore.h>
@@ -316,4 +316,108 @@ SceneBVH::SceneBVH(const std::vector<TriangleObject>& triangles)
     std::cout << "NANORT INIT" << std::endl;
 }
 #else
+#include "acceleration/bvh.h"
+#include "acceleration/sahbvh.h"
+#include "acceleration/splitbvh.h"
+
+struct AccelContext
+{
+    std::vector<float>        g_verts;
+    std::vector<unsigned int> g_faces;
+    // std::shared_ptr<BVH>      g_bvh;
+    std::shared_ptr<SplitBVH> g_bvh;
+};
+
+HitInfo SceneBVH::intersect(const Ray& ray) const
+{
+    AccelContext* ctx = static_cast<AccelContext*>(m_ctx);
+
+    HitInfo hit_info;
+    Ray     r(ray);
+    bool    hit = ctx->g_bvh->intersect(r, hit_info);
+
+    if (!hit)
+    {
+        hit_info.reset();
+        return hit_info;
+    }
+
+    // shading normal
+    // vec3 sn = m_triangles_ref[hit_info.prim_id].normal(result.u, result.v);
+    vec3 sn = hit_info.m_hit_object->normal(hit_info.m_u, hit_info.m_v);
+
+    HitInfo isect = HitInfo(
+        hit_info.m_t, hit_info.m_u, hit_info.m_v, sn, hit_info.m_hit_object);
+    isect.setPrimitiveID(hit_info.m_objID);
+    isect.setMaterialID(hit_info.m_matID);
+
+    return isect;
+}
+
+bool SceneBVH::occluded(const Ray& ray, float tfar) const
+{
+    AccelContext* ctx = static_cast<AccelContext*>(m_ctx);
+
+    HitInfo hit_info;
+    Ray     r(ray);
+    bool    hit = ctx->g_bvh->intersect(r, hit_info);
+
+    if (!hit)
+    {
+        hit_info.reset();
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+SceneBVH::~SceneBVH()
+{
+    delete m_ctx;
+    std::cout << "Acceleration context FREE" << std::endl;
+}
+
+SceneBVH::SceneBVH(const std::vector<TriangleObject>& triangles)
+    : m_triangles_ref(triangles)
+{
+    AccelContext* ctx = new AccelContext();
+    assert(ctx);
+    m_ctx = ctx;
+
+    //ctx->g_bvh = std::make_shared<BVH>(m_triangles_ref);
+    ctx->g_bvh = std::make_shared<SplitBVH>(m_triangles_ref);
+
+    int num_triangles = static_cast<int>(triangles.size());
+
+    // convert mesh
+    ctx->g_verts.clear();
+    ctx->g_faces.clear();
+    for (int j = 0; j < num_triangles; j++)
+    {
+        // Positions
+        const vec3& p1 = m_triangles_ref[j].a;
+        const vec3& p2 = m_triangles_ref[j].b;
+        const vec3& p3 = m_triangles_ref[j].c;
+
+        ctx->g_verts.push_back(p1.x);
+        ctx->g_verts.push_back(p1.y);
+        ctx->g_verts.push_back(p1.z);
+
+        ctx->g_verts.push_back(p2.x);
+        ctx->g_verts.push_back(p2.y);
+        ctx->g_verts.push_back(p2.z);
+
+        ctx->g_verts.push_back(p3.x);
+        ctx->g_verts.push_back(p3.y);
+        ctx->g_verts.push_back(p3.z);
+
+        ctx->g_faces.push_back(j * 3);
+        ctx->g_faces.push_back(j * 3 + 1);
+        ctx->g_faces.push_back(j * 3 + 2);
+    }
+
+    std::cout << "Acceleration context INIT" << std::endl;
+}
 #endif

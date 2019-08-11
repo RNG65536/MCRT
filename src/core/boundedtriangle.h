@@ -1,10 +1,8 @@
 #pragma once
 
-#include "AABB.h"
-#include "Triangle.h"
+#include "aabb.h"
+#include "triangle.h"
 
-namespace debug
-{
 // reference to a triangle that is bounded by a clipping aabb
 class BoundedTriangle
 {
@@ -29,4 +27,3 @@ private:
     const std::shared_ptr<Triangle> m_triangle;
     AABB                            m_clipped_bound;  // clipped bound
 };
-}

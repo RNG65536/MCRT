@@ -18,8 +18,12 @@ Ray::Ray(const float3& o_, const float3& d_)
     : orig(o_), dir(d_), tmin(s_ray_epsilon), tmax(NUM_INFINITY)
 
 {
-    // direction must be normalized
+#ifndef NDEBUG
+    float length = d_.length();
     assert(dir.isNormalized());
+#else
+    // direction must be normalized
+#endif
 
     float inv_x = dir.x == 0.0f ? 0.0f : 1.0f / dir.x;
     float inv_y = dir.y == 0.0f ? 0.0f : 1.0f / dir.y;

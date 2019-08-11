@@ -51,12 +51,12 @@ int main(int argc, char** argv)
 #include <random>
 #include <string>
 
-#include "acceleration/BVH.h"
-#include "acceleration/BoundedTriangle.h"
-#include "acceleration/Intersection.h"
-#include "acceleration/Logger.h"
-#include "acceleration/SAHBVH.h"
-#include "acceleration/SplitBVH.h"
+#include "acceleration/bvh.h"
+#include "acceleration/sahbvh.h"
+#include "acceleration/splitbvh.h"
+#include "boundedtriangle.h"
+#include "debugintersection.h"
+#include "logger.h"
 
 #include "debug_mesh.h"
 bool checkEqual(float f1, float f2)
@@ -64,7 +64,7 @@ bool checkEqual(float f1, float f2)
     return fabs(f1 - f2) < 1e-6f;
 }
 
-class IntersectionTriangle : public debug::Intersection
+class IntersectionTriangle : public Intersection
 {
 public:
     IntersectionTriangle(const Triangle& triangle) : m_triangle(triangle)
@@ -83,10 +83,10 @@ private:
     const Triangle& m_triangle;
 };
 
-class IntersectionBoundedTriangle : public debug::Intersection
+class IntersectionBoundedTriangle : public Intersection
 {
 public:
-    IntersectionBoundedTriangle(const debug::BoundedTriangle& triangle)
+    IntersectionBoundedTriangle(const BoundedTriangle& triangle)
         : m_triangle(triangle)
     {
     }
@@ -100,10 +100,10 @@ public:
     }
 
 private:
-    const debug::BoundedTriangle& m_triangle;
+    const BoundedTriangle& m_triangle;
 };
 
-class IntersectionMesh : public debug::Intersection
+class IntersectionMesh : public Intersection
 {
 public:
     IntersectionMesh(const DebugMesh& mesh) : m_mesh(mesh)
@@ -122,10 +122,10 @@ private:
     const DebugMesh& m_mesh;
 };
 
-class IntersectionNaiveBVH : public debug::Intersection
+class IntersectionNaiveBVH : public Intersection
 {
 public:
-    IntersectionNaiveBVH(const debug::BVH& bvh) : m_bvh(bvh)
+    IntersectionNaiveBVH(const BVH& bvh) : m_bvh(bvh)
     {
     }
 
@@ -138,13 +138,13 @@ public:
     }
 
 private:
-    const debug::BVH& m_bvh;
+    const BVH& m_bvh;
 };
 
-class IntersectionSAHBVH : public debug::Intersection
+class IntersectionSAHBVH : public Intersection
 {
 public:
-    IntersectionSAHBVH(const debug::SAHBVH& bvh) : m_bvh(bvh)
+    IntersectionSAHBVH(const SAHBVH& bvh) : m_bvh(bvh)
     {
     }
 
@@ -157,13 +157,13 @@ public:
     }
 
 private:
-    const debug::SAHBVH& m_bvh;
+    const SAHBVH& m_bvh;
 };
 
-class IntersectionSplitBVH : public debug::Intersection
+class IntersectionSplitBVH : public Intersection
 {
 public:
-    IntersectionSplitBVH(const debug::SplitBVH& bvh) : m_bvh(bvh)
+    IntersectionSplitBVH(const SplitBVH& bvh) : m_bvh(bvh)
     {
     }
 
@@ -176,7 +176,7 @@ public:
     }
 
 private:
-    const debug::SplitBVH& m_bvh;
+    const SplitBVH& m_bvh;
 };
 
 //////////////////////////////////////////
@@ -184,9 +184,9 @@ private:
 class Benchmark
 {
 public:
-    Benchmark(const debug::Intersection& reference,
-              const debug::Intersection& subject,
-              const std::string&         name)
+    Benchmark(const Intersection& reference,
+              const Intersection& subject,
+              const std::string&  name)
         : m_reference(reference), m_subject(subject), m_name(name)
     {
     }
@@ -201,12 +201,12 @@ public:
         int test_step = test_total / 100;
         for (int i = 0; i < test_total; i++)
         {
-            float3 origin(randfFast() * 2.0f - 1.0f,
-                          randfFast() * 2.0f - 1.0f,
-                          randfFast() * 2.0f - 1.0f);
-            float3 direction = normalize(float3(
-                randfFast() - 0.5f, randfFast() - 0.5f, randfFast() - 0.5f));
-            Ray    ray(origin, direction);
+            float3 origin(randf() * 2.0f - 1.0f,
+                          randf() * 2.0f - 1.0f,
+                          randf() * 2.0f - 1.0f);
+            float3 direction = normalize(
+                float3(randf() - 0.5f, randf() - 0.5f, randf() - 0.5f));
+            Ray ray(origin, direction);
 
             float ta = m_reference.intersectWith(ray);
             float tb = m_subject.intersectWith(ray);
@@ -222,18 +222,17 @@ public:
             }
             else
             {
-                debug::Logger::info()
+                Logger::info()
                     << "failed: ta = " << ta << ", tb = " << tb << std::endl;
-                debug::Logger::info()
-                    << "ray = " << ray.toString() << std::endl;
-                debug::Logger::info() << std::endl;
+                Logger::info() << "ray = " << ray.toString() << std::endl;
+                Logger::info() << std::endl;
 
                 // exit(1);
             }
 
             if (0 == i % test_step)
             {
-                debug::Logger::info()
+                Logger::info()
                     << "checking " << i / test_step << "%" << std::endl;
             }
         }
@@ -269,9 +268,9 @@ public:
                                                                       begin);
             auto  duration_f = float(duration.count());
             float mrays_per_sec = m_n_rays / duration_f;
-            debug::Logger::info()
-                << m_name << " : " << mrays_per_sec << " Mrays / s, with "
-                << m_n_rays << " rays" << std::endl;
+            Logger::info() << m_name << " : " << mrays_per_sec
+                           << " Mrays / s, with " << m_n_rays << " rays"
+                           << std::endl;
 
             // update ray count to roughly specify interval
             float interval = 1.0f;
@@ -280,42 +279,41 @@ public:
     }
 
 private:
-    const debug::Intersection& m_reference;
-    const debug::Intersection& m_subject;
-    std::string                m_name;
-    int                        m_n_rays = 10000;
+    const Intersection& m_reference;
+    const Intersection& m_subject;
+    std::string         m_name;
+    int                 m_n_rays = 10000;
 };
 
 ////////////////////////////////////////////////////////
 
-void benchmarkLinearTraversal(const DebugMesh&           mesh,
-                              const debug::Intersection& ref)
+void benchmarkLinearTraversal(const DebugMesh& mesh, const Intersection& ref)
 {
     // median split bvh
     IntersectionMesh isect3(mesh);
     Benchmark(ref, isect3, "linear").run();
 }
 
-void benchmarkNaiveBVH(const DebugMesh& mesh, const debug::Intersection& ref)
+void benchmarkNaiveBVH(const DebugMesh& mesh, const Intersection& ref)
 {
     // median split bvh
-    debug::BVH           bvh(mesh.triangles());
+    BVH                  bvh(mesh.triangles());
     IntersectionNaiveBVH isect4(bvh);
     Benchmark(ref, isect4, "naive bvh").run();
 }
 
-void benchmarkSAHBVH(const DebugMesh& mesh, const debug::Intersection& ref)
+void benchmarkSAHBVH(const DebugMesh& mesh, const Intersection& ref)
 {
     // SAH bvh
-    debug::SAHBVH      sahbvh(mesh.triangles());
+    SAHBVH             sahbvh(mesh.triangles());
     IntersectionSAHBVH isect5(sahbvh);
     Benchmark(ref, isect5, "sah bvh").run();
 }
 
-void benchmarkSplitBVH(const DebugMesh& mesh, const debug::Intersection& ref)
+void benchmarkSplitBVH(const DebugMesh& mesh, const Intersection& ref)
 {
     // split bvh
-    debug::SplitBVH      splitbvh(mesh.triangles());
+    SplitBVH             splitbvh(mesh.triangles());
     IntersectionSplitBVH isect6(splitbvh);
     Benchmark(ref, isect6, "split bvh").run();
 }
@@ -326,11 +324,10 @@ void runBVHTest()
     DebugMesh        mesh;
     IntersectionMesh isect3(mesh);
 
-    debug::Logger::info() << "mesh AABB = " << mesh.boundingBox().toString()
-                          << std::endl;
-    debug::Logger::info()
-        << "#######################################################"
-        << std::endl;
+    Logger::info() << "mesh AABB = " << mesh.boundingBox().toString()
+                   << std::endl;
+    Logger::info() << "#######################################################"
+                   << std::endl;
 
     // benchmarkLinearTraversal(mesh, isect3);
     // benchmarkNaiveBVH(mesh, isect3);

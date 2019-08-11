@@ -7,14 +7,12 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "AABB.h"
-#include "Logger.h"
-#include "Triangle.h"
+#include "aabb.h"
+#include "logger.h"
+#include "triangle.h"
 #include "constants.h"
 #include "numeric.h"
 
-namespace debug
-{
 #define DEBUG_BINS 0
 #define DEBUG_INFO 0
 
@@ -137,4 +135,3 @@ private:
     std::vector<std::shared_ptr<Triangle> > m_triangles;
     std::shared_ptr<SAHBVHNode>             m_rootNode;
 };
-}

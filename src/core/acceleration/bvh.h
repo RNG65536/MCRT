@@ -7,16 +7,20 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "BoundedTriangle.h"
-#include "Logger.h"
 #include "aabb.h"
+#include "boundedtriangle.h"
 #include "constants.h"
 #include "intersection.h"
+#include "logger.h"
 #include "numeric.h"
 #include "triangle.h"
 
-namespace debug
+struct BVHTriangleReference
 {
+    std::shared_ptr<Triangle> tri;
+    int                       id = -1;
+};
+
 struct BVHNode
 {
     std::shared_ptr<AABB> boundingBox;
@@ -69,7 +73,7 @@ public:
     bool intersect(Ray& ray, HitInfo& hit_info) const;
 
 private:
+    // std::vector<std::shared_ptr<BVHTriangleReference> > m_triangles;
     std::vector<std::shared_ptr<Triangle> > m_triangles;
     std::shared_ptr<BVHNode>                m_rootNode;
 };
-}

@@ -1,9 +1,7 @@
 #include <algorithm>
-#include "SplitBVH.h"
 #include "numeric.h"
+#include "splitbvh.h"
 
-namespace debug
-{
 bool SplitBVHLeafNode::intersect(Ray& ray, HitInfo& hit_info) const
 {
     hit_info.reset();
@@ -1411,11 +1409,17 @@ void SplitBVHSplitter::sort(
 
 SplitBVH::SplitBVH(const std::vector<Triangle>& mesh)
 {
+    int total = (int)mesh.size();
     m_triangles.clear();
-    for (const auto& t : mesh)
+
+    for (int i = 0; i < total; i++)
     {
+        // TODO : store obj ID in triangle reference
+        // or make sure this is always deep copy
         // copy constructor
-        m_triangles.push_back(std::make_shared<Triangle>(t));
+        auto nt = std::make_shared<Triangle>(mesh[i]);
+        nt->setPrimitiveID(i);
+        m_triangles.push_back(nt);
     }
 
     m_triangle_refs.clear();
@@ -1428,7 +1432,7 @@ SplitBVH::SplitBVH(const std::vector<Triangle>& mesh)
     m_rootNode = build(m_triangle_refs, 0u, "root");
 }
 
-std::shared_ptr<debug::SplitBVHNode> SplitBVH::build(
+std::shared_ptr<SplitBVHNode> SplitBVH::build(
     const std::vector<std::shared_ptr<BoundedTriangle> >& triangles,
     uint32_t                                              level,
     const std::string&                                    direction)
@@ -1635,5 +1639,4 @@ bool SplitBVH::intersect(Ray& ray, HitInfo& hit_info) const
     {
         return false;
     }
-}
 }

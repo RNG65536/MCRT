@@ -129,7 +129,7 @@ float vec3::length() const
 
 bool vec3::isNormalized() const
 {
-    return fabs(length() - 1.0f) < 1e-6f;
+    return fabs(length() - 1.0f) < 1e-5f;
 }
 
 bool vec3::operator==(const vec3& v) const

@@ -231,7 +231,7 @@ void AABB::expandBy(const AABB& box)
 #else
     // this AABB could be invalid, but the floating point
     // arithmetic would handle it
-    assert(b.isValid());
+    assert(box.isValid());
 
     m_min.x = f_min(m_min.x, box.m_min.x);
     m_min.y = f_min(m_min.y, box.m_min.y);

@@ -2,8 +2,6 @@
 
 #include <iostream>
 
-namespace debug
-{
 class Logger
 {
 public:
@@ -35,4 +33,3 @@ public:
 private:
     bool m_enabled = true;
 };
-}
