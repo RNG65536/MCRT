@@ -1,4 +1,6 @@
 #include <cassert>
+#include <cstdio>
+#include <cmath>
 #include <algorithm>
 #include "mesh_sample.h"
 #include "constants.h"
@@ -67,7 +69,7 @@ struct HashGrid {
     int m_perm[27]; // phase group permutation
 
     HashGrid(float radius) {
-        m_delta = radius / std::sqrtf(3.0f);
+        m_delta = radius / std::sqrt(3.0f);
         clear();
 
         int temp[27] = { 5, 6, 17, 22, 0, 23, 13, 3, 19, 2, 16, 25, 9, 24, 15, 8, 20, 7, 14, 11, 10, 21, 4, 18, 12, 1, 26 };
@@ -632,7 +634,7 @@ void check_min_distance(std::vector<Position>& pp)
             mindist = f_min(mindist, dist);
         }
     }
-    printf("mindist of output: %f\n", std::sqrtf(mindist));
+    printf("mindist of output: %f\n", std::sqrt(mindist));
 }
 
 

@@ -31,7 +31,7 @@ float fresnelReflectance(float cos_theta_i, float ior)
 
     const float sin_theta_t_sqr =
         f_min(1.0f, (eta * eta) * (1.0f - cos_theta_i * cos_theta_i));
-    const float cos_theta_t = std::sqrtf(1.0f - sin_theta_t_sqr);
+    const float cos_theta_t = std::sqrt(1.0f - sin_theta_t_sqr);
 
     float       t1 = eta * cos_theta_t;
     const float r_s = (cos_theta_i - t1) / (cos_theta_i + t1);

@@ -132,7 +132,7 @@ bool BoundedTriangle::intersect(Ray& ray, HitInfo& hit_info) const
 {
     if (false == m_clipped_bound.overlap(ray))
     {
-        hit_info.reset();
+        //hit_info.reset();
         return false;
     }
     return m_triangle->intersect(ray, hit_info);

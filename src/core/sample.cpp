@@ -1,6 +1,7 @@
 #include <cassert>
 #include <functional>
 #include <numeric>
+#include <algorithm>
 #include "constants.h"
 #include "numeric.h"
 #include "sample.h"
@@ -161,7 +162,7 @@ vec3 sampleSphereUniform(float x, float y, float* pdf)
     y *= 2 * NUM_PI;
     float cos_theta = 1.0f - 2.0f * x;
     assert(cos_theta >= -1 && cos_theta <= 1);
-    float sin_theta = std::sqrtf(1.0f - cos_theta * cos_theta);
+    float sin_theta = std::sqrt(1.0f - cos_theta * cos_theta);
 
     if (pdf)
     {
@@ -359,7 +360,9 @@ void MetropolisSampler::accept()
     }
 
     global_time++;
-    backup.swap(std::stack<PrimarySample>());
+
+    std::stack<PrimarySample> empty;
+    backup.swap(empty);
 }
 
 float MetropolisSampler::next()

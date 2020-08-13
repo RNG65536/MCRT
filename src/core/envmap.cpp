@@ -9,14 +9,14 @@
 
 static const bool is_pre_warped = true;
 
-static inline float f_max(float a, float b)
-{
-    return (((a) > (b)) ? (a) : (b));
-}
-static inline float f_min(float a, float b)
-{
-    return (((a) < (b)) ? (a) : (b));
-}
+// static inline float f_max(float a, float b)
+// {
+//     return (((a) > (b)) ? (a) : (b));
+// }
+// static inline float f_min(float a, float b)
+// {
+//     return (((a) < (b)) ? (a) : (b));
+// }
 
 // static float randf() { return rand() / (RAND_MAX + 1.0f); }
 // static float randf(){

@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <cmath>
+#include <limits>
 #include "film.h"
 #include "numeric.h"
 
@@ -119,8 +121,8 @@ void FrameBuffer::tonemapReinhard()
         if (lum[n] < lum_eps) lum[n] = lum_eps;
     }
 
-    float lum_min = FLT_MAX;
-    float lum_max = -FLT_MAX;
+    float lum_min = std::numeric_limits<float>::max();
+    float lum_max = -std::numeric_limits<float>::max();
     for (int n = 0; n < pixel_count; n++)
     {
         lum_min = lum_min < lum[n] ? lum_min : lum[n];

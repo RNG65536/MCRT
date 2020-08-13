@@ -1,7 +1,9 @@
+#include "ray.h"
+
 #include <cassert>
 #include <sstream>
+
 #include "constants.h"
-#include "ray.h"
 
 float Ray::s_ray_epsilon = NUM_EPS_RAY;
 
@@ -14,8 +16,17 @@ Ray::Ray() : tmin(s_ray_epsilon), tmax(NUM_INFINITY)
 {
 }
 
+Ray::Ray(const Ray& ray) : Ray(ray.orig, ray.dir, ray.tmin, ray.tmax)
+{
+}
+
 Ray::Ray(const float3& o_, const float3& d_)
-    : orig(o_), dir(d_), tmin(s_ray_epsilon), tmax(NUM_INFINITY)
+    : Ray(o_, d_, s_ray_epsilon, NUM_INFINITY)
+{
+}
+
+Ray::Ray(const float3& o_, const float3& d_, float tmin_, float tmax_)
+    : orig(o_), dir(d_), tmin(tmin_), tmax(tmax_)
 
 {
 #ifndef NDEBUG

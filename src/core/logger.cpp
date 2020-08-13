@@ -1,18 +1,28 @@
+#include <mutex>
 #include "logger.h"
 
-static Logger s_debug_logger(false);
-static Logger s_info_logger(true);
-
-Logger::Logger(bool enabled) : m_enabled(enabled)
+Logger::Logger(bool enabled, nanolog::LogLevel log_level)
+    : m_enabled(enabled), m_log_level(log_level)
 {
+    if (m_enabled)
+    {
+        static std::once_flag flag;
+        std::call_once(flag, []() {
+            nanolog::initialize(
+                nanolog::GuaranteedLogger(), "./", "log.txt", 1);
+        });
+
+        m_logger = std::make_shared<nanolog::NanoLogLine>(
+            m_log_level, __FILE__, __func__, __LINE__);
+    }
 }
 
-Logger& Logger::debug()
+Logger Logger::debug()
 {
-    return s_debug_logger;
+    return Logger(false, nanolog::LogLevel::INFO);
 }
 
-Logger& Logger::info()
+Logger Logger::info()
 {
-    return s_info_logger;
+    return Logger(true, nanolog::LogLevel::INFO);
 }

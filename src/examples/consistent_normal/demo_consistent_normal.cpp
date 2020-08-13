@@ -263,7 +263,7 @@ void DemoConsistentNormal::run()
     float duration = tm.getTime();
     printf("took < %f > second\n", duration);
 
-    fb.dumpPPM("test.ppm");
+    fb.dumpPPM("test_cn.ppm");
 }
 
 int runTest(int argc, char *argv[])

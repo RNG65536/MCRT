@@ -7,6 +7,7 @@
 #include "scene.h"
 #include "timer.h"
 #include "sample.h"
+#include "logger.h"
 
 // TODO : involve envmap lighting
 
@@ -21,8 +22,8 @@ public:
 ///
 static void loadModel0(Scene& scene);
 
-#define PixelWidth 640
-#define PixelHeight 480
+#define PixelWidth 512
+#define PixelHeight 512
 ReferenceBDPT* bdpt = nullptr;
 
 //////////////////////////////////////////////////////////////////////////
@@ -105,7 +106,7 @@ static void addBunny(Scene& scene)
         int b = obj.m_faces[i].y;
         int c = obj.m_faces[i].z;
 
-        TriangleObject obj(
+        TriangleObject tri(
             vec3(obj.m_verts[a].x, (obj.m_verts[a].y), obj.m_verts[a].z),
             vec3(obj.m_verts[b].x, (obj.m_verts[b].y), obj.m_verts[b].z),
             vec3(obj.m_verts[c].x, (obj.m_verts[c].y), obj.m_verts[c].z),
@@ -118,9 +119,9 @@ static void addBunny(Scene& scene)
             vec3(obj.m_vertex_normals[c].x,
                  (obj.m_vertex_normals[c].y),
                  obj.m_vertex_normals[c].z));
-        obj.setMaterialID(id);
+        tri.setMaterialID(id);
 
-        scene.add(obj);
+        scene.add(tri);
     }
 }
 
@@ -249,7 +250,7 @@ static void loadModel1(Scene& scene, FrameBuffer& film)
 
 void loadScenel2(Scene& scene, FrameBuffer& film)
 {
-    film.resize(512, 512);
+    film.resize(PixelWidth, PixelHeight);
 
     float scale = 0.1;
     scene.setCamera(vec3(278, 273, -800) * scale,
@@ -658,7 +659,7 @@ static void render_pt(const Scene& scene, FrameBuffer& film)
 
     for (int y = 0; y < height; ++y)
     {
-        printf("\r render %d / %d  ", y + 1, height);
+        Logger::info() << Logger::carriage_return << " render " << y+1 << " / " << height << "     ";
 #pragma omp parallel for schedule(dynamic)
         for (int x = 0; x < width; ++x)
         {
@@ -688,15 +689,15 @@ static void render_pt(const Scene& scene, FrameBuffer& film)
 
     film.scale(1.0 / spp);
 
-    film.dumpHDR("test.hdr");
+    film.dumpHDR("test_pt_ref.hdr");
 
     // film.tonemap_reinhard();
     film.tonemapGamma(2.2);
 
     float duration = tm.getTime();
-    printf("took < %f > second\n", duration);
+    Logger::info() << "took < " << duration << " > second" << std::endl;
 
-    film.dumpPPM("test.ppm");
+    film.dumpPPM("test_pt_ref.ppm");
 }
 
 const int G_SPP = 100;
@@ -721,7 +722,7 @@ static void render_bdpt(const Scene& scene, FrameBuffer& film)
 
         if (0 == i % step)
         {
-            printf("\r %d / 100", i / step + 1);
+            Logger::info() << Logger::carriage_return << " " << i / step + 1 << " / 100  ";
         }
     }
 
@@ -739,9 +740,9 @@ static void render_bdpt(const Scene& scene, FrameBuffer& film)
     film.tonemapGamma(2.2);
 
     float duration = tm.getTime();
-    printf("took < %f > second\n", duration);
+    Logger::info() << "took < " << duration << " > second" << std::endl;
 
-    film.dumpPPM("test.ppm");
+    film.dumpPPM("test_bdpt.ppm");
 }
 //////////////////////////////////////////////////////////////////////////
 
@@ -766,7 +767,7 @@ void DemoBDPT::run()
     //         }
     //     }
 
-    printf("init complete\n");
+    Logger::info() << "init complete" << std::endl;
 
     render_bdpt(scene, film);
     //     render_pt(scene, film);
@@ -774,12 +775,12 @@ void DemoBDPT::run()
 
 int runTest(int argc, char* argv[])
 {
-    printf("#procs: %d\n", omp_get_num_procs());
-    printf("#threads: %d\n", omp_get_max_threads());
+    Logger::info() << "#procs: " << omp_get_num_procs() << std::endl;
+    Logger::info() << "#threads: " << omp_get_max_threads() << std::endl;
     omp_set_num_threads(std::max(1, omp_get_max_threads() - 1));
     //     omp_set_num_threads(1); // single thread
-    printf("#procs: %d\n", omp_get_num_procs());
-    printf("#threads: %d\n", omp_get_max_threads());
+    Logger::info() << "#procs: " << omp_get_num_procs() << std::endl;
+    Logger::info() << "#threads: " << omp_get_max_threads() << std::endl;
 
     DemoBDPT* demo = new DemoBDPT;
 

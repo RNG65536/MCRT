@@ -21,10 +21,5 @@ private:
     const std::vector<TriangleObject>& m_triangles_ref;
 
     // geometry and acceleration info
-#if WITH_EMBREE
-    void* m_device = nullptr;
-    void* m_scene = nullptr;
-#else
     void* m_ctx = nullptr;
-#endif
 };

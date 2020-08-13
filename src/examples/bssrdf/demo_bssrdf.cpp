@@ -314,7 +314,7 @@ float fresnel(const float cos_theta_i, const float eta /* eta_t / eta_i */)
 {
     const float sin_theta_t_sqr = 1.0 / (eta * eta) * (1.0 - cos_theta_i * cos_theta_i);
     if (sin_theta_t_sqr >= 1.0) return 1.0;
-    const float cos_theta_t = std::sqrtf(1.0 - sin_theta_t_sqr);
+    const float cos_theta_t = std::sqrt(1.0 - sin_theta_t_sqr);
     const float r_s = (cos_theta_i - eta * cos_theta_t) / (cos_theta_i + eta * cos_theta_t); // perpendicular
     const float r_p = (eta * cos_theta_i - cos_theta_t) / (eta * cos_theta_i + cos_theta_t); // parallel
     return (r_s * r_s + r_p * r_p) * 0.5;
@@ -873,7 +873,7 @@ float bssrdf(const vec3 xi, const vec3 ni, const vec3 wi, /* light */ const vec3
 
     // directions of ray sources
     const float nnt = 1.0 / ETA, ddn = -dot(wi, ni);
-    const vec3 wr = (wi * -nnt - ni * (ddn * nnt + std::sqrtf(1.0 - nnt * nnt * (1.0 - ddn * ddn)))).normalize();  // refraction
+    const vec3 wr = (wi * -nnt - ni * (ddn * nnt + std::sqrt(1.0 - nnt * nnt * (1.0 - ddn * ddn)))).normalize();  // refraction
     //     if (0 == wr.length())
     //     {
     //         printf("wr: %f, %f, %f,\n", wr.x, wr.y, wr.z);
@@ -885,14 +885,14 @@ float bssrdf(const vec3 xi, const vec3 ni, const vec3 wi, /* light */ const vec3
     const vec3 wv = wr - ni_s * (2.0 * dot(wr, ni_s)); // reflection
 
     // distance to real sources
-    const float cos_beta = -std::sqrtf((r * r - dot(xoxi, wr) * dot(xoxi, wr)) / (r * r + de[j] * de[j]));
+    const float cos_beta = -std::sqrt((r * r - dot(xoxi, wr) * dot(xoxi, wr)) / (r * r + de[j] * de[j]));
     float dr;
     const float mu0 = -dot(no, wr);
     if (mu0 > 0.0) {
-        dr = std::sqrtf((D1[j] * mu0) * ((D1[j] * mu0) - de[j] * cos_beta * 2.0) + r * r);
+        dr = std::sqrt((D1[j] * mu0) * ((D1[j] * mu0) - de[j] * cos_beta * 2.0) + r * r);
     }
     else {
-        dr = std::sqrtf(1.0 / (3.0 * sigma_t[j] * 3.0 * sigma_t[j]) + r * r);
+        dr = std::sqrt(1.0 / (3.0 * sigma_t[j] * 3.0 * sigma_t[j]) + r * r);
     }
 
     // distance to virtual source
@@ -1450,7 +1450,7 @@ void DemoBSSRDF::run()
     }
 #endif
 
-    fb.dumpHDR("test.hdr");
+    fb.dumpHDR("test_sss.hdr");
 
     //fb.tonemapReinhard();
     fb.tonemapGamma(2.2);
@@ -1458,7 +1458,7 @@ void DemoBSSRDF::run()
     float duration = tm.getTime();
     printf("took < %f > second\n", duration);
 
-    fb.dumpPPM("test.ppm");
+    fb.dumpPPM("test_sss.ppm");
 }
 
 int runTest(int argc, char *argv[])

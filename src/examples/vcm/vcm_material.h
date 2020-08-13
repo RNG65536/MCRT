@@ -6,6 +6,8 @@
 #include "geometry.h"
 #include "ray.h"
 #include "sample.h"
+#include "constants.h"
+#include "numeric.h"
 
 class Material_debug
 {

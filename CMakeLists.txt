@@ -84,10 +84,18 @@ set(utility_sources
     "src/core/logger.cpp"
 )
 
-include_directories(
+file(GLOB_RECURSE thirdparty_srcs "src/thirdparty/*")
+
+add_library(thirdparty STATIC ${thirdparty_srcs})
+
+target_include_directories(
+    thirdparty PUBLIC
     "src/thirdparty/nanort"
     "src/thirdparty/glm/include"
+    "src/thirdparty/nanolog"
 )
+
+set_target_properties(thirdparty PROPERTIES FOLDER core)
 
 find_package(embree)
 if (EMBREE_LIBRARY)
@@ -114,10 +122,9 @@ source_group("core\\basic" FILES ${basic_sources})
 source_group("core\\acceleration" FILES ${acceleration_sources})
 source_group("core\\utility" FILES ${utility_sources})
 
-include_directories(
-    src/core
-    src/thirdparty
-)
+target_include_directories(rtcore PUBLIC "src/core")
+
+target_link_libraries(rtcore PUBLIC thirdparty)
 
 # path tracing
 add_executable(demo_pt
@@ -230,3 +237,15 @@ target_link_libraries(demo_splitbvh
 )
 
 set_target_properties(demo_splitbvh PROPERTIES FOLDER demos)
+
+# --------------------- tests -----------------------------
+enable_testing()
+
+add_test(NAME test_pt COMMAND demo_pt)
+add_test(NAME test_bdpt COMMAND demo_bdpt)
+add_test(NAME test_photonmap COMMAND demo_photonmap)
+add_test(NAME test_pssmlt COMMAND demo_pssmlt)
+add_test(NAME test_vcm COMMAND demo_vcm)
+add_test(NAME test_bssrdf COMMAND demo_bssrdf)
+add_test(NAME test_consistentnormal COMMAND demo_consistentnormal)
+# add_test(NAME test_splitbvh COMMAND demo_splitbvh)

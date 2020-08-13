@@ -218,7 +218,7 @@ bool TriangleObject::intersect(Ray& ray, HitInfo& hit_info) const
     }
     else
     {
-        hit_info.reset();
+        //hit_info.reset();
         //hit_info.m_t = NUM_INFINITY;
         return false;
     }

@@ -1,10 +1,14 @@
+#include "scenebvh.h"
+
+#include <consoledebug.h>
+
 #include <cassert>
 #include <cstdio>
 #include <iostream>
 #include <string>
+
 #include "constants.h"
 #include "ray.h"
-#include "scenebvh.h"
 
 #define USE_EMBREE WITH_EMBREE
 #define USE_NANORT 0
@@ -12,6 +16,12 @@
 #if USE_EMBREE
 #include <embree2/rtcore.h>
 #include <embree2/rtcore_ray.h>
+
+struct EmbreeContext
+{
+    RTCDevice device = nullptr;
+    RTCScene  scene = nullptr;
+};
 
 static void errCB(const RTCError code, const char* str)
 {
@@ -70,8 +80,9 @@ HitInfo SceneBVH::intersect(const Ray& ray) const
     rtc_ray.time = 0;
 
     // intersection query
-    assert(nullptr != m_scene);
-    rtcIntersect(static_cast<RTCScene>(m_scene), rtc_ray);
+    auto ctx = reinterpret_cast<EmbreeContext*>(m_ctx);
+    assert(nullptr != ctx->scene);
+    rtcIntersect(ctx->scene, rtc_ray);
     if ((unsigned int)(rtc_ray.geomID) == RTC_INVALID_GEOMETRY_ID)
     {
         return HitInfo();  // no hit
@@ -108,7 +119,8 @@ bool SceneBVH::occluded(const Ray& ray, float tfar) const
     rtc_ray.time = 0;
 
     // intersection query
-    rtcOccluded(static_cast<RTCScene>(m_scene), rtc_ray);
+    auto ctx = reinterpret_cast<EmbreeContext*>(m_ctx);
+    rtcOccluded(static_cast<RTCScene>(ctx->scene), rtc_ray);
     if ((unsigned int)(rtc_ray.geomID) == RTC_INVALID_GEOMETRY_ID)
     {
         return false;
@@ -121,6 +133,11 @@ bool SceneBVH::occluded(const Ray& ray, float tfar) const
 
 SceneBVH::~SceneBVH()
 {
+    auto ctx = reinterpret_cast<EmbreeContext*>(m_ctx);
+
+    auto m_device = ctx->device;
+    auto m_scene = ctx->scene;
+
     if (m_scene)
     {
         rtcDeleteScene(static_cast<RTCScene>(m_scene));
@@ -128,18 +145,23 @@ SceneBVH::~SceneBVH()
     }
     rtcDeleteDevice(static_cast<RTCDevice>(m_device));
 
+    delete ctx;
+
     std::cout << "EMBREE FREE" << std::endl;
 }
 
 SceneBVH::SceneBVH(const std::vector<TriangleObject>& triangles)
     : m_triangles_ref(triangles)
 {
+    auto ctx = new EmbreeContext();
+    m_ctx = ctx;
+
     auto rtc_device = rtcNewDevice(nullptr);
     // create scene
     auto rtc_scene = rtcDeviceNewScene(
         rtc_device, RTC_SCENE_STATIC | RTC_SCENE_INCOHERENT, RTC_INTERSECT1);
-    m_device = rtc_device;
-    m_scene = rtc_scene;
+    ctx->device = rtc_device;
+    ctx->scene = rtc_scene;
 
     rtcDeviceSetErrorFunction(rtc_device, errCB);
 
@@ -187,7 +209,7 @@ SceneBVH::SceneBVH(const std::vector<TriangleObject>& triangles)
     rtcCommit(rtc_scene);
 }
 #elif USE_NANORT
-#include <nanort/nanort.h>
+#include <nanort.h>
 
 struct NanoRTContext
 {
@@ -333,7 +355,7 @@ HitInfo SceneBVH::intersect(const Ray& ray) const
     AccelContext* ctx = static_cast<AccelContext*>(m_ctx);
 
     HitInfo hit_info;
-    Ray     r(ray);
+    Ray     r(ray.orig, ray.dir, NUM_EPS_RAY, NUM_INFINITY);
     bool    hit = ctx->g_bvh->intersect(r, hit_info);
 
     if (!hit)
@@ -359,7 +381,7 @@ bool SceneBVH::occluded(const Ray& ray, float tfar) const
     AccelContext* ctx = static_cast<AccelContext*>(m_ctx);
 
     HitInfo hit_info;
-    Ray     r(ray);
+    Ray     r(ray.orig, ray.dir, NUM_EPS_RAY, tfar - NUM_EPS_RAY);
     bool    hit = ctx->g_bvh->intersect(r, hit_info);
 
     if (!hit)
@@ -386,7 +408,7 @@ SceneBVH::SceneBVH(const std::vector<TriangleObject>& triangles)
     assert(ctx);
     m_ctx = ctx;
 
-    //ctx->g_bvh = std::make_shared<BVH>(m_triangles_ref);
+    // ctx->g_bvh = std::make_shared<BVH>(m_triangles_ref);
     ctx->g_bvh = std::make_shared<SplitBVH>(m_triangles_ref);
 
     int num_triangles = static_cast<int>(triangles.size());

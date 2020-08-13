@@ -23,7 +23,7 @@ vec3 sampleHG(float g /* mean cosine */, float e1, float e2)
     float cost = (s + 2.0f * g * g * g * (-1.0f + e1) * e1 + g * g * s +
                   2.0f * g * (1.0f - e1 + e1 * e1)) /
                  (denom * denom),
-          sint = std::sqrtf(1.0f - cost * cost);
+          sint = std::sqrt(1.0f - cost * cost);
     return vec3(
         cosf(2.0f * NUM_PI * e2) * sint, sinf(2.0f * NUM_PI * e2) * sint, cost);
 }

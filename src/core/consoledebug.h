@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <iostream>
+
 class vec3;
 
 void debugPrint(const vec3& a);

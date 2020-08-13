@@ -77,7 +77,7 @@ bool SAHBVHBranchNode::intersect(Ray& ray, HitInfo& hit_info) const
                 anyHit = true;
 
                 // speeds up but not necessary
-                assert(hit_info.m_t < ray.tmax);
+                assert(hit_info.m_t <= ray.tmax);
                 ray.tmax = hit_info.m_t;
             }
         }
@@ -91,7 +91,7 @@ bool SAHBVHBranchNode::intersect(Ray& ray, HitInfo& hit_info) const
                 anyHit = true;
 
                 // speeds up but not necessary
-                assert(hit_info.m_t < ray.tmax);
+                assert(hit_info.m_t <= ray.tmax);
                 ray.tmax = hit_info.m_t;
             }
         }
@@ -107,7 +107,7 @@ bool SAHBVHBranchNode::intersect(Ray& ray, HitInfo& hit_info) const
                 anyHit = true;
 
                 // speeds up but not necessary
-                assert(hit_info.m_t < ray.tmax);
+                assert(hit_info.m_t <= ray.tmax);
                 ray.tmax = hit_info.m_t;
             }
         }
@@ -121,7 +121,7 @@ bool SAHBVHBranchNode::intersect(Ray& ray, HitInfo& hit_info) const
                 anyHit = true;
 
                 // speeds up but not necessary
-                assert(hit_info.m_t < ray.tmax);
+                assert(hit_info.m_t <= ray.tmax);
                 ray.tmax = hit_info.m_t;
             }
         }

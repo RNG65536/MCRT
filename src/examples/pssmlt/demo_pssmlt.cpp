@@ -1,5 +1,6 @@
 #include <omp.h>
 #include <iostream>
+#include <memory>
 #include <glm/gtc/matrix_transform.hpp>
 #include "scene.h"
 #include "film.h"
@@ -723,10 +724,10 @@ PathSample samplePath(const Scene& scene, Sampler& sampler)
 
 void renderPT(FrameBuffer &fb, const int spp, const Scene& scene)
 {
-    std::vector<std::unique_ptr<StandardSampler>> sampler(omp_get_max_threads());
+    std::vector<std::shared_ptr<StandardSampler>> sampler(omp_get_max_threads());
     for (int i = 0; i < sampler.size(); i++)
     {
-        sampler[i] = std::make_unique<StandardSampler>();
+        sampler[i] = std::make_shared<StandardSampler>();
     }
     const int width = fb.width();
     const int height = fb.height();
@@ -766,10 +767,10 @@ void renderMLT(FrameBuffer &fb, const int spp, const Scene& scene)
         f.resize(width, height);
     }
 
-    std::vector<std::unique_ptr<MetropolisSampler>> sampler(num_threads);
+    std::vector<std::shared_ptr<MetropolisSampler>> sampler(num_threads);
     for (int i = 0; i < sampler.size(); i++)
     {
-        sampler[i] = std::make_unique<MetropolisSampler>();
+        sampler[i] = std::make_shared<MetropolisSampler>();
     }
 
 #pragma omp parallel for
@@ -907,7 +908,7 @@ void DemoPSSMLT::run()
     float duration = tm.getTime();
     printf("took < %f > second\n", duration);
 
-    fb.dumpPPM("test.ppm");
+    fb.dumpPPM("test_mlt.ppm");
 }
 
 int runTest(int argc, char *argv[])

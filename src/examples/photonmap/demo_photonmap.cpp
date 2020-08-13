@@ -1,5 +1,6 @@
 #include <omp.h>
 #include <iostream>
+#include <memory>
 #include <glm/gtc/matrix_transform.hpp>
 #include "photonmap.h"
 #include "scene.h"
@@ -278,7 +279,7 @@ static void renderPass(const Scene& scene)
     float duration = tm.getTime();
     printf("took < %f > second\n", duration);
 
-    fb.dumpPPM("test.ppm");
+    fb.dumpPPM("test_pmap.ppm");
 }
 
 void DemoPhotonMap::run()

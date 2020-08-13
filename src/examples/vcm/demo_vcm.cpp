@@ -241,7 +241,7 @@ private:
 
 class Pyramid
 {
-    std::unordered_map<int, std::unique_ptr<FrameBuffer>> _pyramid;
+    std::unordered_map<int, std::shared_ptr<FrameBuffer>> _pyramid;
     int _w, _h;
     int _max_length;
 
@@ -261,12 +261,12 @@ public:
     {
         system("mkdir pyramid2");
     }
-    std::unique_ptr<FrameBuffer>& get(int s, int t)
+    std::shared_ptr<FrameBuffer>& get(int s, int t)
     {
         int id = hash(s, t);
         if (_pyramid.find(id) == _pyramid.end())
         {
-            _pyramid.insert(std::make_pair(id, std::unique_ptr<FrameBuffer>(new FrameBuffer(_w, _h))));
+            _pyramid.insert(std::make_pair(id, std::shared_ptr<FrameBuffer>(new FrameBuffer(_w, _h))));
         }
         return _pyramid[id];
     }
@@ -299,7 +299,7 @@ public:
     FrameBuffer         m_framebuffer;
     const Scene_debug&  m_scene;
 
-    std::unique_ptr<Pyramid> m_pyramid;
+    std::shared_ptr<Pyramid> m_pyramid;
 
     // final output of this rendering work thread
     void GetFramebuffer(FrameBuffer& framebuffer_)
@@ -569,7 +569,7 @@ public:
 
         mRadiusAlpha = aRadiusAlpha;
 
-        m_pyramid = std::make_unique<Pyramid>(m_scene.m_camera->filmWidth(), m_scene.m_camera->filmHeight(), m_maxPathLength);
+        m_pyramid = std::make_shared<Pyramid>(m_scene.m_camera->filmWidth(), m_scene.m_camera->filmHeight(), m_maxPathLength);
     }
 
     virtual void RunIteration(int aIteration)
@@ -1436,9 +1436,9 @@ void DemoVCM::run()
     FrameBuffer tmp;
     pt.GetFramebuffer(tmp);
 
-    tmp.dumpHDR("www.hdr");
+    tmp.dumpHDR("demo_vcm.hdr");
     tmp.tonemapGamma(2.2f);
-    tmp.dumpPPM("www.ppm");
+    tmp.dumpPPM("demo_vcm.ppm");
 }
 
 int runTest(int argc, char *argv[])

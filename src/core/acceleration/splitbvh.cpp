@@ -4,7 +4,7 @@
 
 bool SplitBVHLeafNode::intersect(Ray& ray, HitInfo& hit_info) const
 {
-    hit_info.reset();
+    //hit_info.reset();
 
     bool hitBox = bounding_box->overlap(ray);
     if (!hitBox)
@@ -58,7 +58,7 @@ bool SplitBVHBranchNode::intersect(Ray& ray, HitInfo& hit_info) const
     // Logger::debug() << "[ " << debug_level << " ][ " << debug_tag << " ]"
     //                << std::endl;
 
-    hit_info.reset();
+    //hit_info.reset();
 
     // AABB culling
     bool hitBox = bounding_box->overlap(ray);
@@ -83,7 +83,7 @@ bool SplitBVHBranchNode::intersect(Ray& ray, HitInfo& hit_info) const
                 anyHit = true;
 
                 // speeds up but not necessary
-                assert(hit_info.m_t < ray.tmax);
+                assert(hit_info.m_t <= ray.tmax);
                 ray.tmax = hit_info.m_t;
             }
         }
@@ -97,7 +97,7 @@ bool SplitBVHBranchNode::intersect(Ray& ray, HitInfo& hit_info) const
                 anyHit = true;
 
                 // speeds up but not necessary
-                assert(hit_info.m_t < ray.tmax);
+                assert(hit_info.m_t <= ray.tmax);
                 ray.tmax = hit_info.m_t;
             }
         }
@@ -113,7 +113,7 @@ bool SplitBVHBranchNode::intersect(Ray& ray, HitInfo& hit_info) const
                 anyHit = true;
 
                 // speeds up but not necessary
-                assert(hit_info.m_t < ray.tmax);
+                assert(hit_info.m_t <= ray.tmax);
                 ray.tmax = hit_info.m_t;
             }
         }
@@ -127,7 +127,7 @@ bool SplitBVHBranchNode::intersect(Ray& ray, HitInfo& hit_info) const
                 anyHit = true;
 
                 // speeds up but not necessary
-                assert(hit_info.m_t < ray.tmax);
+                assert(hit_info.m_t <= ray.tmax);
                 ray.tmax = hit_info.m_t;
             }
         }
@@ -139,7 +139,7 @@ bool SplitBVHBranchNode::intersect(Ray& ray, HitInfo& hit_info) const
     }
     else
     {
-        hit_info.reset();
+        //hit_info.reset();
         return false;
     }
 }

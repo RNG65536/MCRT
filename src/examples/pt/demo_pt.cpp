@@ -708,7 +708,7 @@ void DemoSimple::run()
     }
 
     fb.scale(1.0 / spp);
-    fb.dumpHDR("test.hdr");
+    fb.dumpHDR("test_pt.hdr");
 
     // fb.tonemap_reinhard();
     fb.tonemapGamma(2.2f);
@@ -716,7 +716,7 @@ void DemoSimple::run()
     float duration = tm.getTime();
     printf("took < %f > second\n", duration);
 
-    fb.dumpPPM("test.ppm");
+    fb.dumpPPM("test_pt.ppm");
 }
 
 int runTest(int argc, char* argv[])
@@ -732,7 +732,6 @@ int runTest(int argc, char* argv[])
     demo->run();
     delete demo;
 
-    system("pause");
     return 0;
 }
 

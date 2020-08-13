@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "aabb.h"
 #include "triangle.h"
 

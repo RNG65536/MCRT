@@ -186,12 +186,12 @@ vec3 cross(const vec3& v1, const vec3& v2)
 
 vec3 exp(vec3 a)
 {
-    return vec3(expf(a.x), expf(a.y), expf(a.z));
+    return vec3(std::exp(a.x), std::exp(a.y), std::exp(a.z));
 }
 
 vec3 sqrt(vec3 a)
 {
-    return vec3(std::sqrtf(a.x), std::sqrtf(a.y), std::sqrtf(a.z));
+    return vec3(std::sqrt(a.x), std::sqrt(a.y), std::sqrt(a.z));
 }
 
 vec3 sq(vec3 a)

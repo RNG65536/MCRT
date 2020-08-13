@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+
 #include "vectors.h"
 
 // ray
@@ -9,7 +10,11 @@ class Ray
 {
 public:
     Ray();
+
+    // NOTE that additional dir info is recomputed
+    Ray(const Ray& ray);
     Ray(const float3& o_, const float3& d_);
+    Ray(const float3& o_, const float3& d_, float tmin, float tmax);
 
     // normalize direction
     Ray normalize() const;
